@@ -4,7 +4,7 @@ import AdminDashboard from "./components/AdminDashboard";
 import EmployeeDashboard from "./components/EmployeeDashboard";
 import EmployeeLogin from "./components/EmployeeLogin";
 
-import "./App.css";
+import "./app.css";
 
 function App() {
   const [role, setRole] = useState("employee");
