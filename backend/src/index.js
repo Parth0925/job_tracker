@@ -15,7 +15,7 @@ const PORT = 8000;
 
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://your-netlify-site.netlify.app",
+  "https://jobtrackar.netlify.app",
 ];
 
 // middleware
