@@ -1,0 +1,15 @@
+.active-timers {
+  margin-top: 30px;
+}
+
+.timer-work-card {
+  background: #ffffff;
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+}
+
+.timer-work-card h3 {
+  margin-bottom: 10px;
+}

@@ -1,0 +1,55 @@
+.employee-login {
+  min-height: 70vh;
+
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+}
+
+.login-card {
+  background: white;
+
+  width: 350px;
+
+  padding: 30px;
+
+  border-radius: 12px;
+
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+
+  text-align: center;
+}
+
+.login-text {
+  color: #666;
+
+  margin-bottom: 20px;
+}
+
+.form-input {
+  width: 100%;
+
+  box-sizing: border-box;
+
+  padding: 12px;
+
+  border: 1px solid #ddd;
+
+  border-radius: 8px;
+
+  margin-bottom: 15px;
+}
+
+.button {
+  width: 100%;
+}
+
+.error-message {
+  color: red;
+
+  font-size: 14px;
+
+  margin-bottom: 15px;
+}
