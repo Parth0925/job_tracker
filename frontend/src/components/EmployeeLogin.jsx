@@ -1,34 +1,45 @@
 import { useState } from "react";
+
 import api from "../services/api";
+import { useAuth } from "../context/AuthContext";
+
 import "./EmployeeLogin.css";
 
-function EmployeeLogin({ onLogin }) {
-  const [name, setName] = useState("");
-  const [error, setError] = useState("");
+function EmployeeLogin() {
+  const { login } = useAuth();
+
+  const [employeeCode, setEmployeeCode] = useState("");
+
+  const [password, setPassword] = useState("");
+
   const [loading, setLoading] = useState(false);
+
+  const [error, setError] = useState("");
 
   const handleLogin = async (e) => {
     e.preventDefault();
 
-    if (!name.trim()) {
-      setError("Please enter your name");
+    if (!employeeCode || !password) {
+      setError("Please enter Employee Code and Password.");
+
       return;
     }
 
     try {
       setLoading(true);
+
       setError("");
 
-      const response = await api.get(`/employees/name/${name}`);
+      const response = await api.post("/auth/login", {
+        employeeCode,
 
-      const employee = response.data;
+        password,
+      });
 
-      localStorage.setItem("employee", JSON.stringify(employee));
-
-      onLogin(employee);
-    } catch (error) {
+      login(response.data.employee, response.data.token);
+    } catch (err) {
       setError(
-        "Employee not found. Please enter the same name added by admin.",
+        err.response?.data?.message || "Unable to login. Please try again.",
       );
     } finally {
       setLoading(false);
@@ -38,23 +49,42 @@ function EmployeeLogin({ onLogin }) {
   return (
     <div className="employee-login">
       <div className="login-card">
-        <h1 className="dashboard-title">Employee Access</h1>
+        <div className="login-header">
+          <div className="login-logo">JT</div>
 
-        <p className="login-text">Enter your name to continue</p>
+          <h1>Welcome Back</h1>
 
-        <form onSubmit={handleLogin}>
-          <input
-            type="text"
-            placeholder="Enter your name"
-            className="form-input"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
+          <p>Sign in to access your workspace</p>
+        </div>
+
+        <form onSubmit={handleLogin} className="login-form">
+          <div className="input-group">
+            <label>Employee Code</label>
+
+            <input
+              className="form-input"
+              placeholder="Enter employee code"
+              value={employeeCode}
+              onChange={(e) => setEmployeeCode(e.target.value.toUpperCase())}
+            />
+          </div>
+
+          <div className="input-group">
+            <label>Password</label>
+
+            <input
+              className="form-input"
+              type="password"
+              placeholder="Enter password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
 
           {error && <p className="error-message">{error}</p>}
 
-          <button className="button" disabled={loading}>
-            {loading ? "Checking..." : "Continue"}
+          <button className="login-btn" disabled={loading}>
+            {loading ? "Signing In..." : "Sign In"}
           </button>
         </form>
       </div>

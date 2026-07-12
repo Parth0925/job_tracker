@@ -1,8 +1,10 @@
 const router = require("express").Router();
+const bcrypt = require("bcryptjs");
+const auth = require("../middleware/auth");
 const Employee = require("../../models/Employee");
 
 // GET all employees
-router.get("/", async (req, res) => {
+router.get("/", auth, async (req, res) => {
   try {
     const employees = await Employee.find();
     res.json(employees);
@@ -13,17 +15,46 @@ router.get("/", async (req, res) => {
 
 router.post("/", async (req, res) => {
   try {
-    const Employee = require("../../models/Employee");
+    const count = await Employee.countDocuments();
+
+    const employeeCode = `EMP${String(count + 1).padStart(3, "0")}`;
+
+    const hashedPassword = await bcrypt.hash(`${employeeCode}@123`, 10);
 
     const employee = await Employee.create({
-      name: req.body.name,
+      employeeCode,
+
+      firstName: req.body.firstName,
+      lastName: req.body.lastName,
       email: req.body.email,
+      password: hashedPassword,
+      mobile: req.body.mobile,
+
+      designation: req.body.designation,
+      department: req.body.department,
+
+      joiningDate: req.body.joiningDate,
+      dateOfBirth: req.body.dateOfBirth,
+
+      interestAreas: req.body.interestAreas || [],
+
+      employmentType: req.body.employmentType,
+
+      status: req.body.status,
+
       role: req.body.role || "employee",
+
+      notes: req.body.notes,
     });
 
-    res.status(201).json(employee);
+    res.status(201).json({
+      employee,
+      defaultPassword: `${employeeCode}@123`,
+    });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({
+      message: error.message,
+    });
   }
 });
 

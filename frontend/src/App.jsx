@@ -1,61 +1,18 @@
-import { useState } from "react";
+import { useAuth } from "./context/AuthContext";
 
-import AdminDashboard from "./components/AdminDashboard";
-import EmployeeDashboard from "./components/EmployeeDashboard";
+import DashboardLayout from "./layouts/DashboardLayout";
 import EmployeeLogin from "./components/EmployeeLogin";
 
 import "./app.css";
 
 function App() {
-  const [role, setRole] = useState("employee");
+  const { user } = useAuth();
 
-  const [employee, setEmployee] = useState(
-    JSON.parse(localStorage.getItem("employee")) || null,
-  );
+  if (!user) {
+    return <EmployeeLogin />;
+  }
 
-  const handleEmployeeLogin = (employeeData) => {
-    setEmployee(employeeData);
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem("employee");
-
-    setEmployee(null);
-  };
-
-  return (
-    <div className="container">
-      <div className="button-group">
-        <button
-          className={`role-btn ${role === "admin" ? "active" : ""}`}
-          onClick={() => setRole("admin")}
-        >
-          Admin
-        </button>
-
-        <button
-          className={`role-btn ${role === "employee" ? "active" : ""}`}
-          onClick={() => setRole("employee")}
-        >
-          Employee
-        </button>
-      </div>
-
-      {role === "admin" ? (
-        <AdminDashboard />
-      ) : employee ? (
-        <>
-          <button className="logout-btn" onClick={handleLogout}>
-            Logout
-          </button>
-
-          <EmployeeDashboard employee={employee} />
-        </>
-      ) : (
-        <EmployeeLogin onLogin={handleEmployeeLogin} />
-      )}
-    </div>
-  );
+  return <DashboardLayout />;
 }
 
 export default App;

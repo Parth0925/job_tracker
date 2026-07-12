@@ -5,9 +5,18 @@ const ActiveTimer = require("../../models/ActiveTimer");
 // GET all jobs
 router.get("/", async (req, res) => {
   try {
-    const jobs = await Job.find();
+    const jobs = await Job.find().populate(
+      "assignedEmployees",
+      "employeeCode firstName lastName designation",
+    );
 
-    res.json(jobs);
+    const jobsWithSummary = jobs.map((job) => ({
+      ...job.toObject(),
+
+      budgetSummary: job.getBudgetSummary(),
+    }));
+
+    res.json(jobsWithSummary);
   } catch (error) {
     res.status(500).json({
       message: error.message,
@@ -18,14 +27,28 @@ router.get("/", async (req, res) => {
 // CREATE new job
 router.post("/", async (req, res) => {
   try {
-    const { title, description } = req.body;
-
     const job = await Job.create({
-      title,
+      clientName: req.body.clientName,
+      projectName: req.body.projectName,
+      jobName: req.body.jobName,
 
-      description,
+      description: req.body.description,
 
-      status: "open",
+      budgetedHours: Number(req.body.budgetedHours),
+
+      assignedEmployees: req.body.assignedEmployees || [],
+
+      assignmentDate: req.body.assignmentDate,
+
+      completionDate: req.body.completionDate,
+
+      communicationLog: req.body.communicationLog,
+
+      checklistPrepared: req.body.checklistPrepared,
+
+      priority: req.body.priority,
+
+      status: req.body.status,
 
       timeLogs: [],
     });
@@ -268,7 +291,7 @@ router.get("/history/:employeeId", async (req, res) => {
       job.timeLogs.forEach((log) => {
         if (log.employeeId.toString() === req.params.employeeId) {
           history.push({
-            jobTitle: job.title,
+            jobTitle: job.jobName,
             startTime: log.startTime,
             endTime: log.endTime,
             hours: log.hours,

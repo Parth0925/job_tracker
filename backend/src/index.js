@@ -9,6 +9,8 @@ const messagesRoutes = require("./routes/messages");
 const employeesRoutes = require("./routes/employees");
 const timersRoutes = require("./routes/timers");
 const worklogsRoutes = require("./routes/worklogs");
+const devRoutes = require("./routes/dev");
+const authRoutes = require("./routes/auth");
 
 const app = express();
 const PORT = 8000;
@@ -41,6 +43,8 @@ app.use("/api/messages", messagesRoutes);
 app.use("/api/employees", employeesRoutes);
 app.use("/api/timers", timersRoutes);
 app.use("/api/worklogs", worklogsRoutes);
+app.use("/api/dev", devRoutes);
+app.use("/api/auth", authRoutes);
 
 app.get("/", (req, res) => {
   res.send("Internal Job System API is running");

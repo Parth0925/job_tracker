@@ -1,0 +1,209 @@
+.job-discussion {
+  flex: 1;
+
+  display: flex;
+  flex-direction: column;
+
+  background: #ffffff;
+
+  height: 100%;
+
+  overflow: hidden;
+}
+
+/* =====================
+   HEADER
+===================== */
+
+.discussion-header {
+  padding: 20px 24px;
+
+  border-bottom: 1px solid #e5e7eb;
+
+  background: #ffffff;
+}
+
+.discussion-header h2 {
+  margin: 0;
+
+  font-size: 18px;
+
+  font-weight: 700;
+
+  color: #111827;
+}
+
+.discussion-header p {
+  margin-top: 6px;
+
+  color: #6b7280;
+
+  font-size: 14px;
+}
+
+/* =====================
+   MESSAGE AREA
+===================== */
+
+.discussion-body {
+  flex: 1;
+
+  overflow-y: auto;
+
+  padding: 22px;
+
+  background: #f8fafc;
+}
+
+.discussion-message {
+  background: #ffffff;
+
+  border: 1px solid #e5e7eb;
+
+  border-radius: 14px;
+
+  padding: 16px;
+
+  margin-bottom: 14px;
+
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04);
+
+  border-left: 3px solid #2563eb;
+}
+
+.discussion-author {
+  font-size: 14px;
+
+  font-weight: 600;
+
+  color: #111827;
+}
+
+.discussion-time {
+  margin-top: 4px;
+
+  margin-bottom: 10px;
+
+  font-size: 12px;
+
+  color: #94a3b8;
+}
+
+.discussion-text {
+  color: #374151;
+
+  font-size: 14px;
+
+  line-height: 1.6;
+
+  white-space: pre-wrap;
+}
+
+/* =====================
+   FOOTER
+===================== */
+
+.discussion-footer {
+  display: flex;
+
+  align-items: center;
+
+  gap: 12px;
+
+  padding: 16px;
+
+  border-top: 1px solid #e5e7eb;
+
+  background: #ffffff;
+}
+
+.discussion-footer select {
+  width: 180px;
+
+  height: 42px;
+
+  border-radius: 10px;
+
+  border: 1px solid #d1d5db;
+
+  padding: 0 12px;
+
+  outline: none;
+
+  background: white;
+}
+
+.discussion-footer input {
+  flex: 1;
+
+  height: 42px;
+
+  padding: 0 14px;
+
+  border-radius: 10px;
+
+  border: 1px solid #d1d5db;
+
+  outline: none;
+}
+
+.discussion-footer input:focus,
+.discussion-footer select:focus {
+  border-color: #2563eb;
+
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+}
+
+.discussion-footer button {
+  height: 42px;
+
+  padding: 0 22px;
+
+  border: none;
+
+  border-radius: 10px;
+
+  background: #2563eb;
+
+  color: white;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: 0.2s;
+}
+
+.discussion-footer button:hover {
+  background: #1d4ed8;
+}
+
+/* =====================
+   SCROLLBAR
+===================== */
+
+.discussion-body::-webkit-scrollbar {
+  width: 7px;
+}
+
+.discussion-body::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+
+  border-radius: 20px;
+}
+
+/* =====================
+   RESPONSIVE
+===================== */
+
+@media (max-width: 700px) {
+  .discussion-footer {
+    flex-direction: column;
+  }
+
+  .discussion-footer select,
+  .discussion-footer input,
+  .discussion-footer button {
+    width: 100%;
+  }
+}

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "../services/api";
 import "./ActiveTimers.css";
+import CommonCard from "./CommonCard";
 
 function ActiveTimers() {
   const [timers, setTimers] = useState([]);
@@ -54,7 +55,7 @@ function ActiveTimers() {
   };
 
   return (
-    <div className="active-timers">
+    <CommonCard title="Running Timers">
       <h2 className="section-title">Currently Working</h2>
 
       {timers.length === 0 ? (
@@ -74,7 +75,7 @@ function ActiveTimers() {
           </div>
         ))
       )}
-    </div>
+    </CommonCard>
   );
 }
 

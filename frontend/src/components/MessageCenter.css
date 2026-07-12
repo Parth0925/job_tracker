@@ -1,0 +1,129 @@
+.message-center {
+  display: grid;
+
+  grid-template-columns: 320px 1fr;
+
+  height: 650px;
+
+  border: 1px solid #e5e7eb;
+
+  border-radius: 16px;
+
+  overflow: hidden;
+
+  background: #ffffff;
+}
+
+/* =====================
+   JOB LIST PANEL
+===================== */
+
+.jobs-panel {
+  border-right: 1px solid #e5e7eb;
+
+  background: #f8fafc;
+
+  overflow-y: auto;
+}
+
+.jobs-panel h3 {
+  margin: 0;
+
+  padding: 18px 20px;
+
+  font-size: 16px;
+
+  font-weight: 700;
+
+  color: #111827;
+
+  background: #ffffff;
+
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.job-item {
+  padding: 16px 18px;
+
+  cursor: pointer;
+
+  border-bottom: 1px solid #eef2f7;
+
+  transition: 0.2s ease;
+}
+
+.job-item strong {
+  display: block;
+
+  font-size: 14px;
+
+  color: #111827;
+
+  margin-bottom: 5px;
+}
+
+.job-item p {
+  margin: 0;
+
+  color: #6b7280;
+
+  font-size: 13px;
+}
+
+.job-item:hover {
+  background: #ffffff;
+}
+
+.active-job {
+  background: #eff6ff;
+
+  border-left: 4px solid #2563eb;
+}
+
+.active-job strong {
+  color: #2563eb;
+}
+
+/* =====================
+   DISCUSSION AREA
+===================== */
+
+.job-discussion {
+  min-width: 0;
+
+  background: #ffffff;
+}
+
+/* =====================
+   SCROLLBAR
+===================== */
+
+.jobs-panel::-webkit-scrollbar {
+  width: 6px;
+}
+
+.jobs-panel::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+
+  border-radius: 20px;
+}
+
+/* =====================
+   RESPONSIVE
+===================== */
+
+@media (max-width: 900px) {
+  .message-center {
+    grid-template-columns: 1fr;
+
+    height: auto;
+  }
+
+  .jobs-panel {
+    max-height: 300px;
+
+    border-right: none;
+
+    border-bottom: 1px solid #e5e7eb;
+  }
+}

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "../services/api";
 import "./WorkHistory.css";
+import CommonCard from "./CommonCard";
 
 function WorkHistory() {
   const [logs, setLogs] = useState([]);
@@ -24,7 +25,7 @@ function WorkHistory() {
   };
 
   return (
-    <div className="work-history">
+    <CommonCard title="Work History">
       <h2 className="section-title">Work History</h2>
 
       {logs.length === 0 ? (
@@ -62,7 +63,7 @@ function WorkHistory() {
           ))}
         </div>
       )}
-    </div>
+    </CommonCard>
   );
 }
 

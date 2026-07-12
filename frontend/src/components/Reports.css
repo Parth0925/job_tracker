@@ -1,0 +1,239 @@
+.section-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 20px;
+}
+
+/* =====================
+   REPORT TABS
+===================== */
+
+.report-tabs {
+  display: flex;
+
+  flex-wrap: wrap;
+
+  gap: 10px;
+
+  margin-bottom: 24px;
+}
+
+.report-tabs button {
+  height: 40px;
+
+  padding: 0 18px;
+
+  border-radius: 10px;
+
+  border: 1px solid #e5e7eb;
+
+  background: #ffffff;
+
+  color: #4b5563;
+
+  font-size: 14px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: 0.2s;
+}
+
+.report-tabs button:hover {
+  background: #f8fafc;
+}
+
+.active-tab {
+  background: #2563eb !important;
+
+  border-color: #2563eb !important;
+
+  color: white !important;
+}
+
+/* =====================
+   FILTERS
+===================== */
+
+.reports-card {
+  background: #ffffff;
+
+  border: 1px solid #e5e7eb;
+
+  border-radius: 14px;
+
+  padding: 22px;
+}
+
+.report-filters {
+  display: flex;
+
+  align-items: center;
+
+  gap: 12px;
+
+  flex-wrap: wrap;
+}
+
+.report-filters select,
+.report-filters input {
+  height: 42px;
+
+  min-width: 220px;
+
+  padding: 0 14px;
+
+  border-radius: 10px;
+
+  border: 1px solid #d1d5db;
+
+  outline: none;
+
+  background: white;
+
+  font-size: 14px;
+}
+
+.report-filters select:focus,
+.report-filters input:focus {
+  border-color: #2563eb;
+
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+}
+
+.report-filters button {
+  height: 42px;
+
+  padding: 0 20px;
+
+  border: none;
+
+  border-radius: 10px;
+
+  background: #2563eb;
+
+  color: white;
+
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+.report-filters button:hover {
+  background: #1d4ed8;
+}
+
+/* =====================
+   TABLE
+===================== */
+
+.report-table {
+  width: 100%;
+
+  border-collapse: collapse;
+
+  margin-top: 20px;
+
+  overflow: hidden;
+}
+
+.report-table th {
+  background: #f8fafc;
+
+  color: #374151;
+
+  font-size: 13px;
+
+  font-weight: 700;
+}
+
+.report-table th,
+.report-table td {
+  padding: 12px 14px;
+
+  border-bottom: 1px solid #e5e7eb;
+
+  text-align: left;
+
+  font-size: 14px;
+}
+
+.report-table tbody tr:hover {
+  background: #f8fafc;
+}
+
+/* =====================
+   BUDGET CARDS
+===================== */
+
+.budget-grid {
+  display: grid;
+
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+
+  gap: 18px;
+
+  margin-top: 25px;
+}
+
+.budget-card {
+  background: #ffffff;
+
+  border: 1px solid #e5e7eb;
+
+  border-radius: 14px;
+
+  padding: 22px;
+
+  text-align: center;
+
+  transition: 0.2s;
+}
+
+.budget-card:hover {
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.06);
+}
+
+.budget-card h4 {
+  margin-bottom: 12px;
+
+  font-size: 14px;
+
+  font-weight: 600;
+
+  color: #6b7280;
+}
+
+.budget-card span {
+  font-size: 26px;
+
+  font-weight: 700;
+
+  color: #2563eb;
+}
+
+/* =====================
+   RESPONSIVE
+===================== */
+
+@media (max-width: 768px) {
+  .reports-card {
+    padding: 16px;
+  }
+
+  .report-filters select,
+  .report-filters input,
+  .report-filters button {
+    width: 100%;
+
+    min-width: 100%;
+  }
+
+  .report-table {
+    display: block;
+
+    overflow-x: auto;
+  }
+}

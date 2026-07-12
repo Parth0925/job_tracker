@@ -1,0 +1,23 @@
+.employee-panel {
+  border-right: 1px solid #ddd;
+  overflow-y: auto;
+}
+
+.employee-panel h3 {
+  padding: 15px;
+  border-bottom: 1px solid #ddd;
+}
+
+.employee-item {
+  padding: 15px;
+  cursor: pointer;
+  border-bottom: 1px solid #eee;
+}
+
+.employee-item:hover {
+  background: #f4f4f4;
+}
+
+.active-employee {
+  background: #d9ecff;
+}
