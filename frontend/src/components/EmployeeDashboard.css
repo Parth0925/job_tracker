@@ -5,22 +5,37 @@
   gap: 28px;
 }
 
+/* =========================
+   DASHBOARD HEADER
+========================= */
+
 .dashboard-header {
   display: flex;
   justify-content: space-between;
+  align-items: center;
 }
 
 .dashboard-title {
+  margin: 0;
+
   font-size: 32px;
   font-weight: 700;
+
   color: #111827;
 }
 
 .dashboard-subtitle {
-  margin-top: 8px;
+  margin: 8px 0 0;
+
   color: #6b7280;
+
   font-size: 15px;
+  line-height: 1.6;
 }
+
+/* =========================
+   JOB SECTION
+========================= */
 
 .jobs-section {
   display: flex;
@@ -29,16 +44,29 @@
 }
 
 .section-title {
+  margin: 0;
+
   font-size: 20px;
-  font-weight: 600;
+  font-weight: 700;
+
   color: #1f2937;
 }
 
+/* =========================
+   JOB GRID
+========================= */
+
 .jobs-grid {
   display: grid;
+
   grid-template-columns: repeat(2, minmax(0, 1fr));
+
   gap: 22px;
 }
+
+/* =========================
+   JOB CARD
+========================= */
 
 .job-card {
   background: #ffffff;
@@ -52,6 +80,8 @@
   box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
 
   transition: 0.2s ease;
+
+  min-width: 0;
 }
 
 .job-card:hover {
@@ -61,36 +91,236 @@
 }
 
 .job-title {
+  margin: 0 0 16px;
+
   font-size: 20px;
   font-weight: 700;
-  color: #111827;
 
-  margin-bottom: 12px;
+  color: #111827;
 }
 
 .job-description {
+  margin: 0 0 10px;
+
   color: #64748b;
 
-  line-height: 1.6;
+  font-size: 14px;
 
-  margin-bottom: 18px;
+  line-height: 1.6;
 }
 
-.open-badge {
+.job-description strong {
+  color: #374151;
+}
+
+/* =========================
+   JOB STATUS
+========================= */
+
+.job-status-area {
+  display: flex;
+
+  flex-wrap: wrap;
+
+  align-items: center;
+
+  gap: 8px;
+
+  margin-top: 16px;
+}
+
+.job-status-badge,
+.review-badge {
   display: inline-flex;
 
-  padding: 7px 14px;
+  align-items: center;
+
+  min-height: 34px;
+
+  padding: 0 13px;
 
   border-radius: 999px;
 
   font-size: 13px;
 
-  font-weight: 600;
+  font-weight: 700;
+}
+
+/* =========================
+   JOB STATUS COLORS
+========================= */
+
+.status-not-started {
+  background: #dbeafe;
+
+  color: #1d4ed8;
+}
+
+.status-awaiting-info {
+  background: #fee2e2;
+
+  color: #b91c1c;
+}
+
+.status-in-review {
+  background: #fef3c7;
+
+  color: #92400e;
+}
+
+.status-completed {
+  background: #dcfce7;
 
   color: #15803d;
-
-  background: rgba(34, 197, 94, 0.12);
 }
+
+.status-rejected {
+  background: #fee2e2;
+
+  color: #b91c1c;
+}
+
+/* =========================
+   REVIEW STATUS
+========================= */
+
+.submitted-badge {
+  background: #eff6ff;
+
+  color: #2563eb;
+}
+
+.rejected-message {
+  width: 100%;
+
+  margin-top: 4px;
+
+  padding: 10px 12px;
+
+  border-radius: 8px;
+
+  background: #fef2f2;
+
+  border: 1px solid #fecaca;
+
+  color: #b91c1c;
+
+  font-size: 13px;
+
+  line-height: 1.5;
+}
+
+/* =========================
+   ASSIGNMENT SUMMARY
+========================= */
+
+.assignment-summary {
+  margin-top: 20px;
+
+  padding: 18px;
+
+  background: #f8fafc;
+
+  border: 1px solid #e5e7eb;
+
+  border-radius: 12px;
+}
+
+.assignment-summary h4 {
+  margin: 0 0 14px;
+
+  font-size: 15px;
+
+  font-weight: 700;
+
+  color: #111827;
+}
+
+.assignment-summary p {
+  margin: 8px 0;
+
+  font-size: 14px;
+
+  color: #64748b;
+}
+
+.assignment-summary strong {
+  color: #374151;
+}
+
+/* =========================
+   ASSIGNMENT ACTIONS
+========================= */
+
+.assignment-actions {
+  display: flex;
+
+  flex-wrap: wrap;
+
+  gap: 10px;
+
+  margin-top: 16px;
+}
+
+.reviewer-actions {
+  align-items: center;
+}
+
+/* =========================
+   BUTTONS
+========================= */
+
+.button {
+  min-height: 40px;
+
+  padding: 0 16px;
+
+  border: none;
+
+  border-radius: 9px;
+
+  background: #2563eb;
+
+  color: #ffffff;
+
+  font-size: 14px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: 0.2s ease;
+}
+
+.button:hover {
+  background: #1d4ed8;
+
+  transform: translateY(-1px);
+}
+
+.button:active {
+  transform: scale(0.98);
+}
+
+.approve-button {
+  background: #16a34a;
+}
+
+.approve-button:hover {
+  background: #15803d;
+}
+
+.reject-button {
+  background: #dc3545;
+}
+
+.reject-button:hover {
+  background: #b91c1c;
+}
+
+/* =========================
+   TIMER AREA
+========================= */
 
 .job-timer {
   margin-top: 20px;
@@ -100,6 +330,26 @@
   border-top: 1px solid #e5e7eb;
 }
 
+.hours-completed-message {
+  padding: 12px;
+
+  border-radius: 9px;
+
+  background: #fef2f2;
+
+  color: #b91c1c;
+
+  font-size: 13px;
+
+  font-weight: 600;
+
+  text-align: center;
+}
+
+/* =========================
+   HISTORY
+========================= */
+
 .history-section {
   background: #ffffff;
 
@@ -108,20 +358,86 @@
   padding: 24px;
 
   border: 1px solid #e5e7eb;
+
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
 }
 
-@media (max-width: 900px) {
+/* =========================
+   EMPTY JOB STATE
+========================= */
+
+.empty-jobs {
+  grid-column: 1 / -1;
+
+  padding: 40px;
+
+  text-align: center;
+
+  color: #6b7280;
+
+  background: #ffffff;
+
+  border: 1px dashed #d1d5db;
+
+  border-radius: 14px;
+}
+
+.empty-jobs p {
+  margin: 0;
+
+  font-size: 14px;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 1100px) {
   .jobs-grid {
     grid-template-columns: 1fr;
   }
 }
 
 @media (max-width: 768px) {
+  .employee-dashboard {
+    gap: 20px;
+  }
+
   .dashboard-title {
     font-size: 26px;
   }
 
+  .dashboard-subtitle {
+    font-size: 14px;
+  }
+
+  .job-card {
+    padding: 18px;
+  }
+
   .history-section {
     padding: 18px;
+  }
+}
+
+@media (max-width: 500px) {
+  .dashboard-title {
+    font-size: 23px;
+  }
+
+  .job-title {
+    font-size: 18px;
+  }
+
+  .assignment-summary {
+    padding: 15px;
+  }
+
+  .assignment-actions {
+    flex-direction: column;
+  }
+
+  .button {
+    width: 100%;
   }
 }

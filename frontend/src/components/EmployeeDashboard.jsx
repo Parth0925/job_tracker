@@ -56,8 +56,28 @@ function EmployeeDashboard({ employee }) {
     }
   };
 
+  const submitForReview = async (jobId) => {
+    try {
+      await api.post(`/jobs/${jobId}/submit-review`, {
+        employeeId,
+      });
+
+      alert("Job submitted for review successfully.");
+
+      fetchJobs();
+    } catch (error) {
+      alert(
+        error.response?.data?.message || "Failed to submit job for review.",
+      );
+    }
+  };
+
   return (
     <div className="employee-dashboard">
+      {/* =========================
+          DASHBOARD HEADER
+      ========================= */}
+
       <div className="dashboard-header">
         <div>
           <h1 className="dashboard-title">Employee Dashboard</h1>
@@ -68,184 +88,168 @@ function EmployeeDashboard({ employee }) {
         </div>
       </div>
 
+      {/* =========================
+          ASSIGNED JOBS
+      ========================= */}
+
       <section className="jobs-section">
         <h2 className="section-title">My Assigned Jobs</h2>
 
         <div className="jobs-grid">
-          {jobs.map((job) => {
-            const assignment = job.assignments?.find(
-              (a) => a.employeeId?._id === employeeId,
-            );
+          {jobs.length === 0 ? (
+            <div className="empty-jobs">
+              <p>No assigned jobs available.</p>
+            </div>
+          ) : (
+            jobs.map((job) => {
+              const assignment = job.assignments?.find(
+                (a) => a.employeeId?._id === employeeId,
+              );
 
-            return (
-              <div key={job._id} className="job-card">
-                <h3 className="job-title">{job.jobName}</h3>
+              return (
+                <div key={job._id} className="job-card">
+                  {/* JOB INFORMATION */}
 
-                <p className="job-description">
-                  <strong>Client:</strong> {job.clientName}
-                </p>
+                  <h3 className="job-title">{job.jobName}</h3>
 
-                <p className="job-description">
-                  <strong>Project:</strong> {job.projectName}
-                </p>
+                  <p className="job-description">
+                    <strong>Client:</strong> {job.clientName}
+                  </p>
 
-                <p className="job-description">
-                  <strong>Description:</strong> {job.description}
-                </p>
+                  <p className="job-description">
+                    <strong>Project:</strong> {job.projectName}
+                  </p>
 
-                <div
-                  className="open-badge"
-                  style={{
-                    background:
-                      job.status === "Completed"
-                        ? "#28a745"
-                        : job.status === "In Review"
-                          ? "#ffc107"
-                          : job.status === "Awaiting Info"
-                            ? "#dc3545"
-                            : "#0d6efd",
-                    color: "#fff",
-                  }}
-                >
-                  {job.status}
-                  {job.submittedForReview && (
-                    <div
-                      style={{
-                        marginTop: "10px",
-                        color: "#1976d2",
-                        fontWeight: "bold",
-                      }}
+                  <p className="job-description">
+                    <strong>Description:</strong>{" "}
+                    {job.description || "No description provided."}
+                  </p>
+
+                  {/* STATUS */}
+
+                  <div className="job-status-area">
+                    <span
+                      className={`job-status-badge status-${job.status
+                        ?.toLowerCase()
+                        .replace(/\s+/g, "-")}`}
                     >
-                      Submitted For Review
-                    </div>
-                  )}
+                      {job.status}
+                    </span>
 
-                  {job.reviewStatus === "Rejected" && (
-                    <div
-                      style={{
-                        marginTop: "10px",
-                        color: "red",
-                        fontWeight: "bold",
-                      }}
-                    >
-                      Rejected : {job.reviewComments}
-                    </div>
-                  )}
-                </div>
+                    {job.submittedForReview && (
+                      <span className="review-badge submitted-badge">
+                        Submitted For Review
+                      </span>
+                    )}
 
-                {assignment && (
-                  <div className="assignment-summary">
-                    <h4>Your Assignment</h4>
-
-                    <p>
-                      <strong>Role:</strong> {assignment.role}
-                    </p>
-
-                    <p>
-                      <strong>Allocated Hours:</strong>{" "}
-                      {assignment.allocatedHours} hrs
-                    </p>
-
-                    <p>
-                      <strong>Spent Hours:</strong> {assignment.spentHours} hrs
-                    </p>
-
-                    <p>
-                      <strong>Remaining Hours:</strong>{" "}
-                      {assignment.remainingHours} hrs
-                    </p>
-
-                    <p>
-                      <strong>Budget Status:</strong> {assignment.budgetStatus}
-                    </p>
-
-                    <p>
-                      <strong>Progress:</strong>{" "}
-                      {assignment.spentHours >= assignment.allocatedHours
-                        ? "Completed"
-                        : assignment.spentHours > 0
-                          ? "Working"
-                          : "Not Started"}
-                    </p>
-                    {assignment.role === "Preparer" &&
-                      !job.submittedForReview &&
-                      assignment.spentHours > 0 && (
-                        <div style={{ marginTop: "15px" }}>
-                          <button
-                            className="button"
-                            onClick={async () => {
-                              try {
-                                await api.post(
-                                  `/jobs/${job._id}/submit-review`,
-                                  {
-                                    employeeId,
-                                  },
-                                );
-
-                                alert("Job submitted for review successfully.");
-
-                                fetchJobs();
-                              } catch (error) {
-                                alert(
-                                  error.response?.data?.message ||
-                                    "Failed to submit job for review.",
-                                );
-                              }
-                            }}
-                          >
-                            Submit for Review
-                          </button>
-                        </div>
-                      )}
-                    {assignment.role === "Reviewer" &&
-                      job.submittedForReview &&
-                      job.reviewStatus === "Pending" && (
-                        <div style={{ marginTop: "15px" }}>
-                          <button
-                            className="button"
-                            onClick={() => approveJob(job._id)}
-                          >
-                            Approve Job
-                          </button>
-
-                          <button
-                            className="button"
-                            style={{
-                              marginLeft: "10px",
-                              background: "#dc3545",
-                            }}
-                            onClick={() => rejectJob(job._id)}
-                          >
-                            Reject Job
-                          </button>
-                        </div>
-                      )}
+                    {job.reviewStatus === "Rejected" && (
+                      <div className="rejected-message">
+                        <strong>Rejected:</strong>{" "}
+                        {job.reviewComments || "No comments provided."}
+                      </div>
+                    )}
                   </div>
-                )}
 
-                <div className="job-timer">
-                  {assignment?.role === "Preparer" &&
-                  assignment?.remainingHours > 0 ? (
-                    <div className="job-timer">
+                  {/* ASSIGNMENT */}
+
+                  {assignment && (
+                    <div className="assignment-summary">
+                      <h4>Your Assignment</h4>
+
+                      <p>
+                        <strong>Role:</strong> {assignment.role}
+                      </p>
+
+                      <p>
+                        <strong>Allocated Hours:</strong>{" "}
+                        {assignment.allocatedHours} hrs
+                      </p>
+
+                      <p>
+                        <strong>Spent Hours:</strong> {assignment.spentHours}{" "}
+                        hrs
+                      </p>
+
+                      <p>
+                        <strong>Remaining Hours:</strong>{" "}
+                        {assignment.remainingHours} hrs
+                      </p>
+
+                      <p>
+                        <strong>Budget Status:</strong>{" "}
+                        {assignment.budgetStatus}
+                      </p>
+
+                      <p>
+                        <strong>Progress:</strong>{" "}
+                        {assignment.spentHours >= assignment.allocatedHours
+                          ? "Completed"
+                          : assignment.spentHours > 0
+                            ? "Working"
+                            : "Not Started"}
+                      </p>
+
+                      {/* PREPARER ACTION */}
+
+                      {assignment.role === "Preparer" &&
+                        !job.submittedForReview &&
+                        assignment.spentHours > 0 && (
+                          <div className="assignment-actions">
+                            <button
+                              className="button"
+                              onClick={() => submitForReview(job._id)}
+                            >
+                              Submit for Review
+                            </button>
+                          </div>
+                        )}
+
+                      {/* REVIEWER ACTION */}
+
+                      {assignment.role === "Reviewer" &&
+                        job.submittedForReview &&
+                        job.reviewStatus === "Pending" && (
+                          <div className="assignment-actions reviewer-actions">
+                            <button
+                              className="button approve-button"
+                              onClick={() => approveJob(job._id)}
+                            >
+                              Approve Job
+                            </button>
+
+                            <button
+                              className="button reject-button"
+                              onClick={() => rejectJob(job._id)}
+                            >
+                              Reject Job
+                            </button>
+                          </div>
+                        )}
+                    </div>
+                  )}
+
+                  {/* TIMER */}
+
+                  <div className="job-timer">
+                    {assignment?.role === "Preparer" &&
+                    assignment?.remainingHours > 0 ? (
                       <JobTimer jobId={job._id} employeeId={employeeId} />
-                    </div>
-                  ) : (
-                    <div
-                      style={{
-                        marginTop: "15px",
-                        color: "red",
-                        fontWeight: "bold",
-                      }}
-                    >
-                      Allocated hours completed.
-                    </div>
-                  )}{" "}
+                    ) : assignment?.role === "Preparer" ? (
+                      <div className="hours-completed-message">
+                        Allocated hours completed.
+                      </div>
+                    ) : null}
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })
+          )}
         </div>
       </section>
+
+      {/* =========================
+          WORK HISTORY
+      ========================= */}
 
       <section className="history-section">
         <EmployeeWorkHistory employee={employee} />

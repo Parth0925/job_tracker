@@ -128,7 +128,7 @@ function JobTimer({ jobId, employeeId }) {
 
           <button
             className="timer-btn"
-            style={{ background: "#1976d2", marginTop: "10px" }}
+            className="timer-btn submit-btn"
             onClick={submitForReview}
           >
             Submit For Review
@@ -148,7 +148,7 @@ function JobTimer({ jobId, employeeId }) {
 
           <button
             className="timer-btn"
-            style={{ background: "#1976d2", marginTop: "10px" }}
+            className="timer-btn submit-btn"
             onClick={submitForReview}
           >
             Submit For Review

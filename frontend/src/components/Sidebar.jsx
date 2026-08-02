@@ -7,6 +7,7 @@ import {
   Timer,
   History,
   Settings,
+  ChevronRight,
 } from "lucide-react";
 
 import "./Sidebar.css";
@@ -50,32 +51,53 @@ function Sidebar({ active, setActive }) {
   return (
     <aside className="sidebar">
       <div className="sidebar-logo">
-        {/* <div className="logo-icon">JT</div> */}
+        <div className="brand-mark">CRM</div>
 
         <div className="brand-info">
           <h2>CRM</h2>
-
           <span>Workforce Management</span>
         </div>
       </div>
 
+      <div className="sidebar-section-label">MAIN MENU</div>
+
       <nav className="sidebar-menu">
         {menus.map((item) => {
           const Icon = item.icon;
+          const isActive = active === item.title;
 
           return (
             <button
               key={item.title}
-              className={`menu-item ${active === item.title ? "active" : ""}`}
+              type="button"
+              className={`menu-item ${isActive ? "active" : ""}`}
               onClick={() => setActive(item.title)}
+              aria-current={isActive ? "page" : undefined}
             >
-              <Icon size={19} />
+              <span className="menu-icon">
+                <Icon size={19} strokeWidth={isActive ? 2.4 : 2} />
+              </span>
 
-              <span>{item.title}</span>
+              <span className="menu-label">{item.title}</span>
+
+              {isActive && (
+                <ChevronRight
+                  className="menu-arrow"
+                  size={16}
+                  strokeWidth={2.5}
+                />
+              )}
             </button>
           );
         })}
       </nav>
+
+      <div className="sidebar-footer">
+        <div className="sidebar-footer-line"></div>
+
+        <span>CRM</span>
+        <small>Workforce Management</small>
+      </div>
     </aside>
   );
 }

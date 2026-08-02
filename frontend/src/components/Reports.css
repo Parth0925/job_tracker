@@ -9,7 +9,7 @@
    REPORT TABS
 ===================== */
 
-.report-tabs {
+/* .report-tabs {
   display: flex;
 
   flex-wrap: wrap;
@@ -17,7 +17,7 @@
   gap: 10px;
 
   margin-bottom: 24px;
-}
+} */
 
 .report-tabs button {
   height: 40px;
@@ -236,4 +236,81 @@
 
     overflow-x: auto;
   }
+}
+
+/* =====================
+   REPORT PLACEHOLDER
+===================== */
+
+.report-placeholder {
+  min-height: 260px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
+
+  text-align: center;
+
+  padding: 40px 20px;
+
+  background: #f8fafc;
+
+  border: 1px dashed #cbd5e1;
+
+  border-radius: 12px;
+}
+
+.report-placeholder-icon {
+  width: 52px;
+
+  height: 52px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  margin-bottom: 14px;
+
+  border-radius: 50%;
+
+  background: #eff6ff;
+
+  color: #2563eb;
+
+  font-size: 24px;
+}
+
+.report-placeholder h3 {
+  margin: 0 0 8px;
+
+  font-size: 18px;
+
+  color: #111827;
+}
+
+.report-placeholder p {
+  max-width: 500px;
+
+  margin: 0;
+
+  color: #6b7280;
+
+  font-size: 14px;
+
+  line-height: 1.6;
+}
+
+.report-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e5e7eb;
 }

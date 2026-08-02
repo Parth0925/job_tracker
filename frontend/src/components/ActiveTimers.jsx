@@ -37,12 +37,10 @@ function ActiveTimers() {
   const calculateDuration = (startedAt) => {
     const start = new Date(startedAt);
 
-    const diff = Math.floor((now - start) / 1000);
+    const diff = Math.max(0, Math.floor((now - start) / 1000));
 
     const hrs = Math.floor(diff / 3600);
-
     const mins = Math.floor((diff % 3600) / 60);
-
     const secs = diff % 60;
 
     return (
@@ -56,24 +54,84 @@ function ActiveTimers() {
 
   return (
     <CommonCard title="Running Timers">
-      <h2 className="section-title">Currently Working</h2>
+      <div className="active-timers-header">
+        <div>
+          <h2 className="section-title">Currently Working</h2>
+
+          <p className="active-timers-subtitle">
+            Monitor employees who are currently working on jobs.
+          </p>
+        </div>
+
+        <div className="active-timer-count">
+          <span className="active-dot"></span>
+
+          <strong>{timers.length}</strong>
+
+          <span>Active</span>
+        </div>
+      </div>
 
       {timers.length === 0 ? (
-        <p>No active work</p>
+        <div className="empty-timers">
+          <div className="empty-timers-icon">⏱</div>
+
+          <h3>No Active Timers</h3>
+
+          <p>No employees are currently working on a job.</p>
+        </div>
       ) : (
-        timers.map((timer) => (
-          <div key={timer._id} className="timer-work-card">
-            <h3>{timer.employeeId?.name}</h3>
+        <div className="timers-grid">
+          {timers.map((timer) => (
+            <div key={timer._id} className="timer-work-card">
+              <div className="timer-card-header">
+                <div className="employee-avatar">
+                  {timer.employeeId?.name
+                    ? timer.employeeId.name.charAt(0).toUpperCase()
+                    : "E"}
+                </div>
 
-            <p>Job: {timer.jobId?.title}</p>
+                <div className="employee-info">
+                  <h3>{timer.employeeId?.name || "Employee"}</h3>
 
-            <p>Started: {new Date(timer.startedAt).toLocaleTimeString()}</p>
+                  <span className="working-status">
+                    <span className="status-dot"></span>
+                    Working
+                  </span>
+                </div>
+              </div>
 
-            <p>
-              Running: <strong>{calculateDuration(timer.startedAt)}</strong>
-            </p>
-          </div>
-        ))
+              <div className="timer-job-info">
+                <span className="timer-label">JOB</span>
+
+                <p>{timer.jobId?.title || "Job"}</p>
+              </div>
+
+              <div className="timer-details">
+                <div className="timer-detail">
+                  <span className="timer-label">STARTED</span>
+
+                  <strong>
+                    {new Date(timer.startedAt).toLocaleTimeString()}
+                  </strong>
+                </div>
+
+                <div className="timer-detail">
+                  <span className="timer-label">RUNNING</span>
+
+                  <strong className="running-time">
+                    {calculateDuration(timer.startedAt)}
+                  </strong>
+                </div>
+              </div>
+
+              <div className="timer-live-bar">
+                <span></span>
+                Live timer
+              </div>
+            </div>
+          ))}
+        </div>
       )}
     </CommonCard>
   );

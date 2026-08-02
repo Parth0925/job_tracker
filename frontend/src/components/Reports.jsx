@@ -448,6 +448,23 @@ function Reports() {
           )}
         </div>
       )}
+
+      {/* ================= IDLE TIME REPORT ================= */}
+
+      {activeReport === "idle" && (
+        <div className="reports-card">
+          <div className="report-placeholder">
+            <div className="report-placeholder-icon">⏱</div>
+
+            <h3>Idle Time Report</h3>
+
+            <p>
+              Idle time analysis will be displayed here based on employee
+              working activity.
+            </p>
+          </div>
+        </div>
+      )}
     </CommonCard>
   );
 }

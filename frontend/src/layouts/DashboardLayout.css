@@ -9,14 +9,13 @@
   display: flex;
   flex-direction: column;
   min-width: 0;
-  height: 100vh;
-  overflow: hidden;
+  min-height: 100vh;
 }
 
 .page-content {
   flex: 1;
-  overflow-y: auto;
   padding: 28px;
+  overflow: visible;
 }
 
 .page-wrapper {
