@@ -49,10 +49,61 @@ const jobSchema = new mongoose.Schema(
       default: 0,
     },
 
-    assignedEmployees: [
+    jobType: {
+      type: String,
+      enum: ["Billable", "Non Billable"],
+      default: "Billable",
+    },
+
+    repeatJob: {
+      type: Boolean,
+      default: false,
+    },
+
+    repeatFrequency: {
+      type: String,
+      enum: ["None", "Weekly", "Monthly", "Yearly"],
+      default: "None",
+    },
+
+    nextDueDate: {
+      type: Date,
+    },
+
+    assignments: [
       {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Employee",
+        employeeId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Employee",
+          required: true,
+        },
+
+        role: {
+          type: String,
+          enum: ["Preparer", "Reviewer"],
+          required: true,
+        },
+
+        allocatedHours: {
+          type: Number,
+          default: 0,
+        },
+
+        spentHours: {
+          type: Number,
+          default: 0,
+        },
+
+        remainingHours: {
+          type: Number,
+          default: 0,
+        },
+
+        budgetStatus: {
+          type: String,
+          enum: ["Within Budget", "On Budget", "Over Budget"],
+          default: "Within Budget",
+        },
       },
     ],
 
@@ -78,8 +129,35 @@ const jobSchema = new mongoose.Schema(
 
     status: {
       type: String,
-      enum: ["Open", "In Progress", "Completed", "On Hold"],
-      default: "Open",
+      enum: [
+        "Awaiting Info",
+        "Not Started",
+        "In Review",
+        "Completed",
+        "Rejected",
+      ],
+      default: "Not Started",
+    },
+
+    submittedForReview: {
+      type: Boolean,
+      default: false,
+    },
+
+    reviewStatus: {
+      type: String,
+      enum: ["Pending", "Approved", "Rejected"],
+      default: "Pending",
+    },
+
+    reviewComments: {
+      type: String,
+      default: "",
+    },
+
+    reviewedAt: {
+      type: Date,
+      default: null,
     },
 
     timeLogs: [timeLogSchema],

@@ -37,12 +37,30 @@ const employeeSchema = new mongoose.Schema(
 
     designation: {
       type: String,
-      default: "",
+      enum: [
+        "Operational Head",
+        "Manager",
+        "Team Leader",
+        "Senior Accountant",
+        "Junior Accountant",
+        "Trainee",
+      ],
+      default: "Trainee",
+    },
+
+    designationLevel: {
+      type: Number,
+      default: 6,
     },
 
     department: {
       type: String,
-      default: "",
+      enum: [
+        "IT",
+        "UK Accounts and Taxation",
+        "Human Resource",
+        "Learning and Development",
+      ],
     },
 
     joiningDate: {
@@ -73,6 +91,43 @@ const employeeSchema = new mongoose.Schema(
       type: String,
       enum: ["admin", "employee"],
       default: "employee",
+    },
+
+    documents: {
+      aadharCard: {
+        type: String,
+        default: "",
+      },
+
+      panCard: {
+        type: String,
+        default: "",
+      },
+
+      payslips: {
+        type: [String],
+        default: [],
+      },
+
+      qualifications: {
+        type: [String],
+        default: [],
+      },
+
+      certificates: {
+        type: [String],
+        default: [],
+      },
+
+      relievingLetter: {
+        type: String,
+        default: "",
+      },
+
+      experienceLetter: {
+        type: String,
+        default: "",
+      },
     },
 
     notes: {

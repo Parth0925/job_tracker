@@ -23,6 +23,19 @@ function EmployeeManagement() {
 
   const [notes, setNotes] = useState("");
 
+  const [aadharCard, setAadharCard] = useState(null);
+  const [panCard, setPanCard] = useState(null);
+
+  const [payslips, setPayslips] = useState([]);
+
+  const [qualifications, setQualifications] = useState([]);
+
+  const [certificates, setCertificates] = useState([]);
+
+  const [relievingLetter, setRelievingLetter] = useState(null);
+
+  const [experienceLetter, setExperienceLetter] = useState(null);
+
   const [loading, setLoading] = useState(false);
 
   const [selectedEmployee, setSelectedEmployee] = useState(null);
@@ -50,32 +63,54 @@ function EmployeeManagement() {
 
     try {
       setLoading(true);
+      const formData = new FormData();
 
-      await api.post("/employees", {
-        firstName,
-        lastName,
-        email,
-        mobile,
+      formData.append("firstName", firstName);
+      formData.append("lastName", lastName);
+      formData.append("email", email);
+      formData.append("mobile", mobile);
 
-        designation,
-        department,
+      formData.append("designation", designation);
+      formData.append("department", department);
 
-        joiningDate,
-        dateOfBirth,
+      formData.append("joiningDate", joiningDate);
+      formData.append("dateOfBirth", dateOfBirth);
 
-        interestAreas: interestAreas
-          .split(",")
-          .map((item) => item.trim())
-          .filter(Boolean),
+      formData.append(
+        "interestAreas",
+        JSON.stringify(
+          interestAreas
+            .split(",")
+            .map((item) => item.trim())
+            .filter(Boolean),
+        ),
+      );
 
-        employmentType,
-        status,
+      formData.append("employmentType", employmentType);
+      formData.append("status", status);
+      formData.append("role", "employee");
+      formData.append("notes", notes);
 
-        role: "employee",
+      if (aadharCard) formData.append("aadharCard", aadharCard);
 
-        notes,
+      if (panCard) formData.append("panCard", panCard);
+
+      if (relievingLetter) formData.append("relievingLetter", relievingLetter);
+
+      if (experienceLetter)
+        formData.append("experienceLetter", experienceLetter);
+
+      payslips.forEach((file) => formData.append("payslips", file));
+
+      qualifications.forEach((file) => formData.append("qualifications", file));
+
+      certificates.forEach((file) => formData.append("certificates", file));
+
+      await api.post("/employees", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       });
-
       setFirstName("");
       setLastName("");
       setEmail("");
@@ -112,6 +147,12 @@ function EmployeeManagement() {
       employee.designation?.toLowerCase().includes(search)
     );
   });
+
+  const fileUrl = (fileName) => {
+    if (!fileName) return "#";
+
+    return `${import.meta.env.VITE_API_URL}/uploads/employees/${fileName}`;
+  };
 
   return (
     <div className="employee-management">
@@ -154,19 +195,35 @@ function EmployeeManagement() {
               onChange={(e) => setMobile(e.target.value)}
             />
 
-            <input
+            <select
               className="form-input"
-              placeholder="Designation"
               value={designation}
               onChange={(e) => setDesignation(e.target.value)}
-            />
+            >
+              <option value="">Select Designation</option>
+              <option value="Operational Head">Operational Head</option>
+              <option value="Manager">Manager</option>
+              <option value="Team Leader">Team Leader</option>
+              <option value="Senior Accountant">Senior Accountant</option>
+              <option value="Junior Accountant">Junior Accountant</option>
+              <option value="Trainee">Trainee</option>
+            </select>
 
-            <input
+            <select
               className="form-input"
-              placeholder="Department"
               value={department}
               onChange={(e) => setDepartment(e.target.value)}
-            />
+            >
+              <option value="">Select Department</option>
+              <option value="IT">IT</option>
+              <option value="UK Accounts and Taxation">
+                UK Accounts and Taxation
+              </option>
+              <option value="Human Resource">Human Resource</option>
+              <option value="Learning and Development">
+                Learning and Development
+              </option>
+            </select>
           </div>
         </div>
 
@@ -235,6 +292,78 @@ function EmployeeManagement() {
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
             />
+
+            <div className="documents-section">
+              <h3>Employee Documents</h3>
+
+              <div className="form-grid">
+                <div>
+                  <label className="field-label">Aadhar Card</label>
+                  <input
+                    type="file"
+                    accept=".pdf,.jpg,.jpeg,.png"
+                    onChange={(e) => setAadharCard(e.target.files[0])}
+                  />
+                </div>
+
+                <div>
+                  <label className="field-label">PAN Card</label>
+                  <input
+                    type="file"
+                    accept=".pdf,.jpg,.jpeg,.png"
+                    onChange={(e) => setPanCard(e.target.files[0])}
+                  />
+                </div>
+
+                <div>
+                  <label className="field-label">Payslips</label>
+                  <input
+                    type="file"
+                    multiple
+                    accept=".pdf,.jpg,.jpeg,.png"
+                    onChange={(e) => setPayslips([...e.target.files])}
+                  />
+                </div>
+
+                <div>
+                  <label className="field-label">Qualifications</label>
+                  <input
+                    type="file"
+                    multiple
+                    accept=".pdf,.jpg,.jpeg,.png"
+                    onChange={(e) => setQualifications([...e.target.files])}
+                  />
+                </div>
+
+                <div>
+                  <label className="field-label">Certificates</label>
+                  <input
+                    type="file"
+                    multiple
+                    accept=".pdf,.jpg,.jpeg,.png"
+                    onChange={(e) => setCertificates([...e.target.files])}
+                  />
+                </div>
+
+                <div>
+                  <label className="field-label">Relieving Letter</label>
+                  <input
+                    type="file"
+                    accept=".pdf,.jpg,.jpeg,.png"
+                    onChange={(e) => setRelievingLetter(e.target.files[0])}
+                  />
+                </div>
+
+                <div>
+                  <label className="field-label">Experience Letter</label>
+                  <input
+                    type="file"
+                    accept=".pdf,.jpg,.jpeg,.png"
+                    onChange={(e) => setExperienceLetter(e.target.files[0])}
+                  />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -244,6 +373,66 @@ function EmployeeManagement() {
           </button>
         </div>
       </form>
+
+      <div className="organisation-section">
+        <div className="employees-header">
+          <div>
+            <h2>Organisation Tree</h2>
+            <p>Employee hierarchy by designation</p>
+          </div>
+        </div>
+
+        <div className="organisation-tree">
+          {[
+            "Operational Head",
+            "Manager",
+            "Team Leader",
+            "Senior Accountant",
+            "Junior Accountant",
+            "Trainee",
+          ].map((designation) => {
+            const levelEmployees = employees.filter(
+              (employee) => employee.designation === designation,
+            );
+
+            if (levelEmployees.length === 0) return null;
+
+            return (
+              <div className="organisation-level" key={designation}>
+                <div className="organisation-designation">{designation}</div>
+
+                <div className="organisation-employees">
+                  {levelEmployees.map((employee) => (
+                    <div
+                      className="organisation-card"
+                      key={employee._id}
+                      onClick={() => {
+                        setSelectedEmployee(employee);
+                        setShowModal(true);
+                      }}
+                    >
+                      <div className="employee-avatar">
+                        {employee.firstName?.charAt(0)}
+                        {employee.lastName?.charAt(0)}
+                      </div>
+
+                      <div>
+                        <h4>
+                          {employee.firstName} {employee.lastName}
+                        </h4>
+
+                        <p>{employee.department}</p>
+
+                        <span>{employee.employeeCode}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
 
       <div className="employees-section">
         <div className="employees-header">
@@ -375,6 +564,130 @@ function EmployeeManagement() {
                     {item}
                   </span>
                 ))}
+              </div>
+            </div>
+
+            <div className="profile-section">
+              <h4>Employee Documents</h4>
+
+              <div className="documents-list">
+                {selectedEmployee.documents?.aadharCard && (
+                  <p>
+                    <strong>Aadhar Card : </strong>
+
+                    <a
+                      href={fileUrl(selectedEmployee.documents.aadharCard)}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      View
+                    </a>
+                  </p>
+                )}
+
+                {selectedEmployee.documents?.panCard && (
+                  <p>
+                    <strong>PAN Card : </strong>
+
+                    <a
+                      href={fileUrl(selectedEmployee.documents.panCard)}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      View
+                    </a>
+                  </p>
+                )}
+
+                {selectedEmployee.documents?.relievingLetter && (
+                  <p>
+                    <strong>Relieving Letter : </strong>
+
+                    <a
+                      href={fileUrl(selectedEmployee.documents.relievingLetter)}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      View
+                    </a>
+                  </p>
+                )}
+
+                {selectedEmployee.documents?.experienceLetter && (
+                  <p>
+                    <strong>Experience Letter : </strong>
+
+                    <a
+                      href={fileUrl(
+                        selectedEmployee.documents.experienceLetter,
+                      )}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      View
+                    </a>
+                  </p>
+                )}
+
+                {selectedEmployee.documents?.payslips?.length > 0 && (
+                  <>
+                    <strong>Payslips</strong>
+
+                    <ul>
+                      {selectedEmployee.documents.payslips.map((file) => (
+                        <li key={file}>
+                          <a
+                            href={fileUrl(file)}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            {file}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </>
+                )}
+
+                {selectedEmployee.documents?.qualifications?.length > 0 && (
+                  <>
+                    <strong>Qualifications</strong>
+
+                    <ul>
+                      {selectedEmployee.documents.qualifications.map((file) => (
+                        <li key={file}>
+                          <a
+                            href={fileUrl(file)}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            {file}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </>
+                )}
+
+                {selectedEmployee.documents?.certificates?.length > 0 && (
+                  <>
+                    <strong>Certificates</strong>
+
+                    <ul>
+                      {selectedEmployee.documents.certificates.map((file) => (
+                        <li key={file}>
+                          <a
+                            href={fileUrl(file)}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            {file}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </>
+                )}
               </div>
             </div>
 

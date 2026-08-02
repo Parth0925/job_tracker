@@ -319,3 +319,55 @@
     width: 100%;
   }
 }
+
+.job-filters {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr) auto;
+  gap: 12px;
+  margin-bottom: 12px;
+  align-items: center;
+}
+
+.job-filter-count {
+  margin: 8px 0 18px;
+  font-size: 14px;
+  color: #666;
+}
+
+@media (max-width: 900px) {
+  .job-filters {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .job-filters {
+    grid-template-columns: 1fr;
+  }
+}
+
+.job-filters {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr) auto;
+  gap: 12px;
+  margin-bottom: 15px;
+  align-items: center;
+}
+
+.job-filter-count {
+  margin-bottom: 20px;
+  color: #666;
+  font-size: 14px;
+}
+
+@media (max-width: 1000px) {
+  .job-filters {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .job-filters {
+    grid-template-columns: 1fr;
+  }
+}

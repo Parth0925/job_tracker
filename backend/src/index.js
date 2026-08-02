@@ -11,6 +11,9 @@ const timersRoutes = require("./routes/timers");
 const worklogsRoutes = require("./routes/worklogs");
 const devRoutes = require("./routes/dev");
 const authRoutes = require("./routes/auth");
+const priorityRulesRoutes = require("./routes/priorityRules");
+
+const path = require("path");
 
 const app = express();
 const PORT = 8000;
@@ -35,6 +38,8 @@ app.use((req, res, next) => {
 
 app.use(express.json());
 
+app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
+
 connectDB();
 
 // routes
@@ -45,6 +50,7 @@ app.use("/api/timers", timersRoutes);
 app.use("/api/worklogs", worklogsRoutes);
 app.use("/api/dev", devRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/priority-rules", priorityRulesRoutes);
 
 app.get("/", (req, res) => {
   res.send("Internal Job System API is running");

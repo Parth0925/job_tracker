@@ -6,7 +6,18 @@ import "./JobList.css";
 function JobList() {
   const [jobs, setJobs] = useState([]);
   const [employees, setEmployees] = useState([]);
-  const [assignedEmployees, setAssignedEmployees] = useState([]);
+  const [assignments, setAssignments] = useState([]);
+
+  const [clientFilter, setClientFilter] = useState("");
+  const [projectFilter, setProjectFilter] = useState("");
+  const [jobTypeFilter, setJobTypeFilter] = useState("");
+  const [employeeFilter, setEmployeeFilter] = useState("");
+
+  const [reviewComments, setReviewComments] = useState("");
+
+  const [selectedEmployeeId, setSelectedEmployeeId] = useState("");
+  const [selectedRole, setSelectedRole] = useState("Preparer");
+  const [allocatedHours, setAllocatedHours] = useState("");
 
   const [clientName, setClientName] = useState("");
   const [projectName, setProjectName] = useState("");
@@ -25,7 +36,15 @@ function JobList() {
 
   const [priority, setPriority] = useState("Medium");
 
-  const [status, setStatus] = useState("Open");
+  const [status, setStatus] = useState("Not Started");
+
+  const [jobType, setJobType] = useState("Billable");
+
+  const [repeatJob, setRepeatJob] = useState(false);
+
+  const [repeatFrequency, setRepeatFrequency] = useState("None");
+
+  const [nextDueDate, setNextDueDate] = useState("");
 
   const [loading, setLoading] = useState(false);
 
@@ -46,6 +65,37 @@ function JobList() {
     }
   };
 
+  const filteredJobs = jobs.filter((job) => {
+    const matchesClient = !clientFilter || job.clientName === clientFilter;
+
+    const matchesProject = !projectFilter || job.projectName === projectFilter;
+
+    const matchesJobType = !jobTypeFilter || job.jobType === jobTypeFilter;
+
+    const matchesEmployee =
+      !employeeFilter ||
+      job.assignments?.some(
+        (assignment) => assignment.employeeId?._id === employeeFilter,
+      );
+
+    return matchesClient && matchesProject && matchesJobType && matchesEmployee;
+  });
+
+  const clientOptions = [
+    ...new Set(jobs.map((job) => job.clientName).filter(Boolean)),
+  ];
+
+  const projectOptions = [
+    ...new Set(jobs.map((job) => job.projectName).filter(Boolean)),
+  ];
+
+  const clearFilters = () => {
+    setClientFilter("");
+    setProjectFilter("");
+    setJobTypeFilter("");
+    setEmployeeFilter("");
+  };
+
   const fetchEmployees = async () => {
     try {
       const response = await api.get("/employees");
@@ -55,10 +105,54 @@ function JobList() {
     }
   };
 
+  const addAssignment = () => {
+    if (!selectedEmployeeId) return;
+
+    const employee = employees.find((emp) => emp._id === selectedEmployeeId);
+
+    if (!employee) return;
+
+    const alreadyExists = assignments.some(
+      (assignment) =>
+        assignment.employeeId === selectedEmployeeId &&
+        assignment.role === selectedRole,
+    );
+
+    if (alreadyExists) {
+      alert("This employee is already added for this role.");
+      return;
+    }
+
+    setAssignments([
+      ...assignments,
+      {
+        employeeId: selectedEmployeeId,
+        employeeName: `${employee.firstName} ${employee.lastName}`,
+        role: selectedRole,
+        allocatedHours: Number(allocatedHours || 0),
+      },
+    ]);
+
+    setSelectedEmployeeId("");
+    setSelectedRole("Preparer");
+    setAllocatedHours("");
+  };
+
   const handleCreateJob = async (e) => {
     e.preventDefault();
 
-    if (!clientName.trim() || !projectName.trim() || !jobName.trim()) return;
+    if (
+      !clientName.trim() ||
+      !projectName.trim() ||
+      !jobName.trim() ||
+      !budgetedHours ||
+      assignments.length === 0
+    ) {
+      alert(
+        "Please fill all required fields and assign at least one employee.",
+      );
+      return;
+    }
 
     try {
       setLoading(true);
@@ -72,7 +166,14 @@ function JobList() {
 
         budgetedHours,
 
-        assignedEmployees,
+        assignments,
+        jobType,
+
+        repeatJob,
+
+        repeatFrequency,
+
+        nextDueDate,
 
         assignmentDate,
 
@@ -95,7 +196,17 @@ function JobList() {
 
       setBudgetedHours("");
 
-      setAssignedEmployees([]);
+      setAssignments([]);
+      setSelectedEmployeeId("");
+      setSelectedRole("Preparer");
+      setAllocatedHours("");
+      setJobType("Billable");
+
+      setRepeatJob(false);
+
+      setRepeatFrequency("None");
+
+      setNextDueDate("");
 
       setAssignmentDate("");
 
@@ -107,13 +218,50 @@ function JobList() {
 
       setPriority("Medium");
 
-      setStatus("Open");
+      setStatus("Not Started");
 
       fetchJobs();
     } catch (error) {
       console.log("Create job error:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const updateJobStatus = async (jobId, newStatus) => {
+    try {
+      await api.patch(`/jobs/${jobId}/status`, {
+        status: newStatus,
+      });
+
+      fetchJobs();
+
+      const updated = await api.get("/jobs");
+
+      const current = updated.data.find((j) => j._id === jobId);
+
+      if (current) {
+        setSelectedJob(current);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const reviewJob = async (action) => {
+    try {
+      await api.post(`/jobs/${selectedJob._id}/review`, {
+        action,
+        comments: reviewComments,
+      });
+
+      fetchJobs();
+
+      setShowJobModal(false);
+
+      setReviewComments("");
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -153,66 +301,138 @@ function JobList() {
         <input
           className="form-input"
           type="number"
+          min="0"
+          step="0.5"
           placeholder="Budgeted Hours"
           value={budgetedHours}
           onChange={(e) => setBudgetedHours(e.target.value)}
         />
 
-        <label>Assign Employees</label>
+        <label>Job Type</label>
 
-        <div className="selected-employees">
-          {assignedEmployees.length === 0 ? (
-            <p>No employee selected</p>
-          ) : (
-            assignedEmployees.map((id) => {
-              const employee = employees.find((emp) => emp._id === id);
+        <select
+          className="form-input"
+          value={jobType}
+          onChange={(e) => setJobType(e.target.value)}
+        >
+          <option value="Billable">Billable</option>
+          <option value="Non Billable">Non Billable</option>
+        </select>
 
-              return (
-                <span className="employee-chip" key={id}>
-                  {employee?.firstName} {employee?.lastName}
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setAssignedEmployees(
-                        assignedEmployees.filter((empId) => empId !== id),
-                      )
-                    }
-                  >
-                    ✕
-                  </button>
-                </span>
-              );
-            })
-          )}
+        <label>Repeat Job</label>
+
+        <select
+          className="form-input"
+          value={repeatJob}
+          onChange={(e) => setRepeatJob(e.target.value === "true")}
+        >
+          <option value="false">No</option>
+          <option value="true">Yes</option>
+        </select>
+
+        {repeatJob && (
+          <>
+            <label>Repeat Frequency</label>
+
+            <select
+              className="form-input"
+              value={repeatFrequency}
+              onChange={(e) => setRepeatFrequency(e.target.value)}
+            >
+              <option value="Weekly">Weekly</option>
+              <option value="Monthly">Monthly</option>
+              <option value="Yearly">Yearly</option>
+            </select>
+
+            <label>Next Due Date</label>
+
+            <input
+              className="form-input"
+              type="date"
+              value={nextDueDate}
+              onChange={(e) => setNextDueDate(e.target.value)}
+            />
+          </>
+        )}
+
+        <h3 style={{ marginTop: "20px" }}>Assign Employees</h3>
+
+        <div className="assignment-builder">
+          <select
+            className="form-input"
+            value={selectedEmployeeId}
+            onChange={(e) => setSelectedEmployeeId(e.target.value)}
+          >
+            <option value="">Select Employee</option>
+
+            {employees.map((employee) => (
+              <option key={employee._id} value={employee._id}>
+                {employee.firstName} {employee.lastName}
+              </option>
+            ))}
+          </select>
+
+          <select
+            className="form-input"
+            value={selectedRole}
+            onChange={(e) => setSelectedRole(e.target.value)}
+          >
+            <option>Preparer</option>
+            <option>Reviewer</option>
+          </select>
+
+          <input
+            className="form-input"
+            type="number"
+            min="0"
+            step="0.5"
+            placeholder="Allocated Hours"
+            value={allocatedHours}
+            onChange={(e) => setAllocatedHours(e.target.value)}
+          />
+
+          <button type="button" className="button" onClick={addAssignment}>
+            Add Assignment
+          </button>
         </div>
 
-        <div className="employee-selector">
-          {employees.map((employee) => (
-            <label className="employee-option" key={employee._id}>
-              <input
-                type="checkbox"
-                checked={assignedEmployees.includes(employee._id)}
-                onChange={(e) => {
-                  if (e.target.checked) {
-                    setAssignedEmployees([...assignedEmployees, employee._id]);
-                  } else {
-                    setAssignedEmployees(
-                      assignedEmployees.filter((id) => id !== employee._id),
-                    );
-                  }
-                }}
-              />
+        {assignments.length > 0 && (
+          <table className="assignment-table">
+            <thead>
+              <tr>
+                <th>Employee</th>
+                <th>Role</th>
+                <th>Hours</th>
+                <th></th>
+              </tr>
+            </thead>
 
-              <div>
-                <strong>
-                  {employee.firstName} {employee.lastName}
-                </strong>
+            <tbody>
+              {assignments.map((assignment, index) => (
+                <tr key={index}>
+                  <td>{assignment.employeeName}</td>
 
-                <div>{employee.designation}</div>
-              </div>
-            </label>
-          ))}
-        </div>
+                  <td>{assignment.role}</td>
+
+                  <td>{assignment.allocatedHours}</td>
+
+                  <td>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setAssignments(
+                          assignments.filter((_, i) => i !== index),
+                        )
+                      }
+                    >
+                      Remove
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
 
         <label>Assignment Date</label>
 
@@ -251,10 +471,10 @@ function JobList() {
           value={status}
           onChange={(e) => setStatus(e.target.value)}
         >
-          <option>Open</option>
-          <option>In Progress</option>
+          <option>Awaiting Info</option>
+          <option>Not Started</option>
+          <option>In Review</option>
           <option>Completed</option>
-          <option>On Hold</option>
         </select>
 
         <label>Checklist Prepared</label>
@@ -282,8 +502,70 @@ function JobList() {
 
       <h2 className="section-title">All Jobs</h2>
 
+      <div className="job-filters">
+        <select
+          className="form-input"
+          value={clientFilter}
+          onChange={(e) => setClientFilter(e.target.value)}
+        >
+          <option value="">All Clients</option>
+
+          {clientOptions.map((client) => (
+            <option key={client} value={client}>
+              {client}
+            </option>
+          ))}
+        </select>
+
+        <select
+          className="form-input"
+          value={projectFilter}
+          onChange={(e) => setProjectFilter(e.target.value)}
+        >
+          <option value="">All Projects</option>
+
+          {projectOptions.map((project) => (
+            <option key={project} value={project}>
+              {project}
+            </option>
+          ))}
+        </select>
+
+        <select
+          className="form-input"
+          value={jobTypeFilter}
+          onChange={(e) => setJobTypeFilter(e.target.value)}
+        >
+          <option value="">All Job Types</option>
+          <option value="Billable">Billable</option>
+          <option value="Non Billable">Non Billable</option>
+        </select>
+
+        <select
+          className="form-input"
+          value={employeeFilter}
+          onChange={(e) => setEmployeeFilter(e.target.value)}
+        >
+          <option value="">All Employees</option>
+
+          {employees.map((employee) => (
+            <option key={employee._id} value={employee._id}>
+              {employee.firstName} {employee.lastName}
+            </option>
+          ))}
+        </select>
+
+        <button type="button" className="button" onClick={clearFilters}>
+          Clear Filters
+        </button>
+      </div>
+
+      <p className="job-filter-count">
+        Showing {filteredJobs.length} of {jobs.length} jobs
+      </p>
+
       <div className="jobs-grid">
-        {jobs.map((job) => (
+        {filteredJobs.map((job) => (
           <div
             key={job._id}
             className="job-card"
@@ -301,6 +583,26 @@ function JobList() {
             <p className="job-info">
               <strong>Project:</strong> {job.projectName}
             </p>
+
+            <p className="job-info">
+              <strong>Type:</strong> {job.jobType}
+            </p>
+
+            {job.repeatJob && (
+              <>
+                <p className="job-info">
+                  <strong>Recurring:</strong> Yes
+                </p>
+
+                <p className="job-info">
+                  <strong>Frequency:</strong> {job.repeatFrequency}
+                </p>
+
+                <p className="job-info">
+                  <strong>Next Due:</strong> {job.nextDueDate?.substring(0, 10)}
+                </p>
+              </>
+            )}
 
             <p className="job-info">
               <strong>Budget:</strong> {job.budgetedHours} hrs
@@ -339,12 +641,24 @@ function JobList() {
             </p>
 
             <p className="job-info">
-              <strong>Assigned:</strong>{" "}
-              {job.assignedEmployees?.length
-                ? job.assignedEmployees
-                    .map((emp) => `${emp.firstName} ${emp.lastName}`)
-                    .join(", ")
-                : "None"}
+              <strong>Assignments:</strong>
+
+              {job.assignments?.length ? (
+                <ul className="assigned-list">
+                  {job.assignments.map((assignment, index) => (
+                    <li key={index}>
+                      {assignment.employeeId?.firstName}{" "}
+                      {assignment.employeeId?.lastName}
+                      {" • "}
+                      {assignment.role}
+                      {" • "}
+                      {assignment.allocatedHours} hrs
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                " None"
+              )}
             </p>
 
             <p className="job-info">
@@ -390,10 +704,30 @@ function JobList() {
             <p>
               <strong>Client :</strong> {selectedJob.clientName}
             </p>
-
             <p>
               <strong>Project :</strong> {selectedJob.projectName}
             </p>
+
+            <p>
+              <strong>Job Type :</strong> {selectedJob.jobType}
+            </p>
+
+            {selectedJob.repeatJob && (
+              <>
+                <p>
+                  <strong>Recurring :</strong> Yes
+                </p>
+
+                <p>
+                  <strong>Frequency :</strong> {selectedJob.repeatFrequency}
+                </p>
+
+                <p>
+                  <strong>Next Due :</strong>{" "}
+                  {selectedJob.nextDueDate?.substring(0, 10)}
+                </p>
+              </>
+            )}
 
             <p>
               <strong>Description :</strong>
@@ -413,6 +747,25 @@ function JobList() {
               <strong>Status :</strong> {selectedJob.status}
             </p>
 
+            <div style={{ marginTop: "12px" }}>
+              <label>
+                <strong>Update Job Status</strong>
+              </label>
+
+              <select
+                className="form-input"
+                value={selectedJob.status}
+                onChange={(e) =>
+                  updateJobStatus(selectedJob._id, e.target.value)
+                }
+              >
+                <option value="Awaiting Info">Awaiting Info</option>
+                <option value="Not Started">Not Started</option>
+                <option value="In Review">In Review</option>
+                <option value="Completed">Completed</option>
+              </select>
+            </div>
+
             <p>
               <strong>Assignment Date :</strong>{" "}
               {selectedJob.assignmentDate?.substring(0, 10)}
@@ -429,22 +782,35 @@ function JobList() {
             </p>
 
             <div>
-              <strong>Assigned Employees</strong>
+              <strong>Assignments</strong>
 
-              {selectedJob.assignedEmployees?.length ? (
-                <ul className="assigned-list">
-                  {selectedJob.assignedEmployees.map((employee) => (
-                    <li key={employee._id}>
-                      {employee.firstName} {employee.lastName}
-                      {" • "}
-                      {employee.employeeCode}
-                      {" • "}
-                      {employee.designation}
-                    </li>
-                  ))}
-                </ul>
+              {selectedJob.assignments?.length ? (
+                <table className="assignment-table">
+                  <thead>
+                    <tr>
+                      <th>Employee</th>
+                      <th>Role</th>
+                      <th>Allocated</th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    {selectedJob.assignments.map((assignment, index) => (
+                      <tr key={index}>
+                        <td>
+                          {assignment.employeeId?.firstName}{" "}
+                          {assignment.employeeId?.lastName}
+                        </td>
+
+                        <td>{assignment.role}</td>
+
+                        <td>{assignment.allocatedHours} hrs</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               ) : (
-                <p>No employees assigned.</p>
+                <p>No assignments.</p>
               )}
             </div>
 
@@ -453,6 +819,40 @@ function JobList() {
             </p>
 
             <p>{selectedJob.communicationLog}</p>
+
+            <hr style={{ margin: "20px 0" }} />
+
+            <h3>Review</h3>
+
+            <p>
+              <strong>Submitted :</strong>{" "}
+              {selectedJob.submittedForReview ? "Yes" : "No"}
+            </p>
+
+            <p>
+              <strong>Review Status :</strong> {selectedJob.reviewStatus}
+            </p>
+
+            <textarea
+              className="form-textarea"
+              placeholder="Review comments..."
+              value={reviewComments}
+              onChange={(e) => setReviewComments(e.target.value)}
+            />
+
+            <div style={{ marginTop: "15px" }}>
+              <button className="button" onClick={() => reviewJob("approve")}>
+                Approve
+              </button>
+
+              <button
+                className="button"
+                style={{ marginLeft: "10px" }}
+                onClick={() => reviewJob("reject")}
+              >
+                Reject
+              </button>
+            </div>
           </div>
         </div>
       )}

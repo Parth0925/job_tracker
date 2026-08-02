@@ -80,6 +80,20 @@ function JobTimer({ jobId, employeeId }) {
     alert("Work saved");
   };
 
+  const submitForReview = async () => {
+    try {
+      await api.post(`/jobs/${jobId}/submit-review`, {
+        employeeId,
+      });
+
+      alert("Job submitted for review.");
+
+      setStatus("idle");
+    } catch (error) {
+      alert(error.response?.data?.message || "Unable to submit.");
+    }
+  };
+
   const formatTime = () => {
     const h = Math.floor(seconds / 3600);
 
@@ -111,6 +125,14 @@ function JobTimer({ jobId, employeeId }) {
           <button className="timer-btn stop-btn" onClick={stopTimer}>
             Stop
           </button>
+
+          <button
+            className="timer-btn"
+            style={{ background: "#1976d2", marginTop: "10px" }}
+            onClick={submitForReview}
+          >
+            Submit For Review
+          </button>
         </>
       )}
 
@@ -122,6 +144,14 @@ function JobTimer({ jobId, employeeId }) {
 
           <button className="timer-btn stop-btn" onClick={stopTimer}>
             Stop
+          </button>
+
+          <button
+            className="timer-btn"
+            style={{ background: "#1976d2", marginTop: "10px" }}
+            onClick={submitForReview}
+          >
+            Submit For Review
           </button>
         </>
       )}
