@@ -430,88 +430,102 @@ textarea.form-input {
 
 .organisation-tree {
   width: 100%;
-  padding: 24px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
+  min-width: 0;
+  padding: 28px;
+  overflow-x: auto;
   border: 1px solid #e5e7eb;
   border-radius: 18px;
   background: #ffffff;
   box-shadow: 0 3px 14px rgba(15, 23, 42, 0.035);
 }
 
-.organisation-level {
-  width: 100%;
+.organisation-tree-hint {
+  width: fit-content;
+  margin: 0 auto 28px;
+  padding: 8px 13px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #dbeafe;
+  border-radius: 999px;
+  background: #eff6ff;
+  color: #2563eb;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.organisation-tree-hint span:first-child {
+  font-size: 15px;
+}
+
+.organisation-roots {
+  min-width: max-content;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 50px;
+}
+
+.organisation-node {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-.organisation-designation {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 12px;
-  padding: 7px 13px;
-  border: 1px solid #dbeafe;
-  border-radius: 999px;
-  background: #eff6ff;
-  color: #1d4ed8;
-  font-size: 12px;
-  font-weight: 700;
-}
-
-.organisation-designation small {
-  min-width: 20px;
-  height: 20px;
-  padding: 0 5px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 999px;
-  background: #ffffff;
-  color: #2563eb;
-  font-size: 10px;
-}
-
-.organisation-employees {
-  width: 100%;
+.organisation-node-content {
+  position: relative;
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 12px;
+  flex-direction: column;
+  align-items: center;
 }
 
 .organisation-card {
-  min-width: 230px;
-  max-width: 280px;
-  flex: 0 1 250px;
-  padding: 13px;
+  position: relative;
+  width: 285px;
+  min-width: 285px;
+  padding: 15px;
   display: flex;
-  align-items: center;
-  gap: 11px;
+  flex-direction: column;
+  gap: 13px;
   border: 1px solid #e2e8f0;
-  border-radius: 13px;
+  border-radius: 14px;
   background: #ffffff;
   color: inherit;
   text-align: left;
-  cursor: pointer;
+  cursor: grab;
+  box-shadow: 0 3px 10px rgba(15, 23, 42, 0.035);
   transition:
     border-color 0.2s ease,
     box-shadow 0.2s ease,
-    transform 0.2s ease;
+    transform 0.2s ease,
+    opacity 0.2s ease;
 }
 
 .organisation-card:hover {
   border-color: #bfdbfe;
-  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.07);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
   transform: translateY(-2px);
 }
 
+.organisation-card:active {
+  cursor: grabbing;
+}
+
+.organisation-card-dragging {
+  opacity: 0.45;
+  transform: scale(0.98);
+}
+
+.organisation-card-main {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+
 .organisation-card .employee-avatar {
-  width: 42px;
-  height: 42px;
+  width: 44px;
+  height: 44px;
   margin: 0;
   flex-shrink: 0;
   font-size: 13px;
@@ -522,7 +536,7 @@ textarea.form-input {
 }
 
 .organisation-card h4 {
-  margin: 0 0 3px;
+  margin: 0 0 4px;
   overflow: hidden;
   color: #111827;
   font-size: 13px;
@@ -532,20 +546,141 @@ textarea.form-input {
 }
 
 .organisation-card p {
-  margin: 0 0 3px;
+  margin: 0 0 4px;
   overflow: hidden;
-  color: #64748b;
+  color: #2563eb;
   font-size: 11px;
+  font-weight: 600;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.organisation-card span {
+.organisation-card-main span {
+  display: block;
+  overflow: hidden;
   color: #94a3b8;
   font-size: 10px;
   font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
+.organisation-reporting {
+  padding-top: 11px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  border-top: 1px solid #eef2f7;
+}
+
+.organisation-reporting label {
+  color: #64748b;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.organisation-reporting select {
+  width: 100%;
+  height: 34px;
+  padding: 0 9px;
+  border: 1px solid #dbe2ea;
+  border-radius: 8px;
+  outline: none;
+  background: #f8fafc;
+  color: #334155;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.organisation-reporting select:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
+}
+
+.organisation-reporting select:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
+.organisation-reporting small {
+  color: #2563eb;
+  font-size: 10px;
+}
+
+.organisation-current-manager {
+  overflow: hidden;
+  color: #94a3b8 !important;
+  font-size: 10px !important;
+  font-weight: 500 !important;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.organisation-children {
+  position: relative;
+  margin-top: 48px;
+  padding-top: 28px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 32px;
+}
+
+.organisation-children::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 1px;
+  height: 28px;
+  background: #cbd5e1;
+}
+
+.organisation-children::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 10%;
+  right: 10%;
+  height: 1px;
+  background: #cbd5e1;
+}
+
+.organisation-children > .organisation-node::before {
+  content: "";
+  position: absolute;
+  top: -28px;
+  left: 50%;
+  width: 1px;
+  height: 28px;
+  background: #cbd5e1;
+}
+
+.organisation-no-root {
+  min-width: 280px;
+  margin: 20px auto 0;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  border: 1px dashed #cbd5e1;
+  border-radius: 12px;
+  background: #f8fafc;
+  text-align: center;
+}
+
+.organisation-no-root strong {
+  color: #475569;
+  font-size: 13px;
+}
+
+.organisation-no-root span {
+  color: #94a3b8;
+  font-size: 11px;
+}
 /* =========================
    EMPLOYEE CARDS
 ========================= */
@@ -1214,5 +1349,26 @@ textarea.form-input {
   .close-btn {
     top: 12px;
     right: 12px;
+  }
+}
+
+@media (max-width: 700px) {
+  .organisation-tree {
+    padding: 16px;
+  }
+
+  .organisation-roots {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 520px) {
+  .organisation-tree {
+    padding: 12px;
+  }
+
+  .organisation-tree-hint {
+    margin-left: 0;
+    margin-right: 0;
   }
 }

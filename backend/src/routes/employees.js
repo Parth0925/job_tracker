@@ -3,12 +3,17 @@ const bcrypt = require("bcryptjs");
 
 const auth = require("../middleware/auth");
 const Employee = require("../../models/Employee");
+const Role = require("../../models/Role");
 const upload = require("../../config/multer");
 
 // GET all employees
 router.get("/", auth, async (req, res) => {
   try {
-    const employees = await Employee.find();
+    const employees = await Employee.find()
+      .populate("roles")
+      .populate("activeRole")
+      .populate("reportsTo", "firstName lastName employeeCode designation");
+
     res.json(employees);
   } catch (error) {
     res.status(500).json({
@@ -38,15 +43,21 @@ router.post(
       const hashedPassword = await bcrypt.hash(`${employeeCode}@123`, 10);
 
       const designationLevels = {
-        "Operational Head": 1,
+        Founder: 1,
         Manager: 2,
         "Team Leader": 3,
-        "Senior Accountant": 4,
-        "Junior Accountant": 5,
-        Trainee: 6,
+        "Assistent Team Leader": 4,
+        "Senior Accountant": 5,
+        "Junior Accountant": 6,
+        Trainee: 7,
+        Intern: 8,
       };
 
       const designationLevel = designationLevels[req.body.designation] || 6;
+
+      const role = await Role.findOne({
+        name: req.body.designation,
+      });
 
       const employee = await Employee.create({
         employeeCode,
@@ -61,6 +72,12 @@ router.post(
 
         designation: req.body.designation,
         designationLevel,
+
+        reportsTo: req.body.reportsTo || null,
+
+        roles: role ? [role._id] : [],
+        activeRole: role ? role._id : null,
+
         department: req.body.department,
 
         joiningDate: req.body.joiningDate,
@@ -73,8 +90,6 @@ router.post(
         employmentType: req.body.employmentType,
 
         status: req.body.status,
-
-        role: req.body.role || "employee",
 
         documents: {
           aadharCard: req.files?.aadharCard?.[0]?.filename || "",
@@ -97,6 +112,9 @@ router.post(
         notes: req.body.notes,
       });
 
+      await employee.populate("roles");
+      await employee.populate("activeRole");
+
       res.status(201).json({
         employee,
         defaultPassword: `${employeeCode}@123`,
@@ -108,6 +126,75 @@ router.post(
     }
   },
 );
+
+// UPDATE EMPLOYEE REPORTING MANAGER
+router.patch("/:id/reporting", auth, async (req, res) => {
+  try {
+    const { reportsTo } = req.body;
+
+    if (reportsTo && reportsTo === req.params.id) {
+      return res.status(400).json({
+        message: "An employee cannot report to themselves.",
+      });
+    }
+
+    if (reportsTo) {
+      const manager = await Employee.findById(reportsTo);
+
+      if (!manager) {
+        return res.status(404).json({
+          message: "Reporting employee not found.",
+        });
+      }
+
+      let currentId = reportsTo;
+
+      while (currentId) {
+        if (currentId === req.params.id) {
+          return res.status(400).json({
+            message:
+              "Invalid reporting structure. Circular hierarchy detected.",
+          });
+        }
+
+        const currentEmployee =
+          await Employee.findById(currentId).select("reportsTo");
+
+        if (!currentEmployee?.reportsTo) {
+          break;
+        }
+
+        currentId = currentEmployee.reportsTo.toString();
+      }
+    }
+
+    const employee = await Employee.findByIdAndUpdate(
+      req.params.id,
+      {
+        reportsTo: reportsTo || null,
+      },
+      {
+        new: true,
+        runValidators: true,
+      },
+    )
+      .populate("roles")
+      .populate("activeRole")
+      .populate("reportsTo", "firstName lastName employeeCode designation");
+
+    if (!employee) {
+      return res.status(404).json({
+        message: "Employee not found.",
+      });
+    }
+
+    res.json(employee);
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+});
 
 // GET employee by name
 router.get("/name/:name", async (req, res) => {

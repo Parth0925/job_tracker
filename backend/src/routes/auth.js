@@ -18,7 +18,9 @@ router.post("/login", async (req, res) => {
 
     const employee = await Employee.findOne({
       employeeCode,
-    });
+    })
+      .populate("roles")
+      .populate("activeRole");
 
     if (!employee) {
       return res.status(401).json({
@@ -33,14 +35,7 @@ router.post("/login", async (req, res) => {
       });
     }
 
-    console.log("Employee Code:", employeeCode);
-    console.log("Entered Password:", password);
-    console.log("Stored Hash:", employee.password);
-
-    // const isMatch = await bcrypt.compare(password, employee.password);
     const isMatch = await bcrypt.compare(password, employee.password);
-
-    console.log("Password Match:", isMatch);
 
     if (!isMatch) {
       return res.status(401).json({
@@ -51,16 +46,13 @@ router.post("/login", async (req, res) => {
     const token = jwt.sign(
       {
         id: employee._id,
-        role: employee.role,
+        activeRole: employee.activeRole?._id || null,
       },
       process.env.JWT_SECRET,
       {
         expiresIn: "7d",
       },
     );
-
-    console.log("Login Successful");
-    console.log(token);
 
     res.json({
       token,
@@ -71,7 +63,10 @@ router.post("/login", async (req, res) => {
         firstName: employee.firstName,
         lastName: employee.lastName,
         designation: employee.designation,
-        role: employee.role,
+
+        roles: employee.roles || [],
+
+        activeRole: employee.activeRole || null,
       },
     });
   } catch (err) {

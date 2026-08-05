@@ -15,7 +15,10 @@ const auth = async (req, res, next) => {
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    const employee = await Employee.findById(decoded.id).select("-password");
+    const employee = await Employee.findById(decoded.id)
+      .select("-password")
+      .populate("roles")
+      .populate("activeRole");
 
     if (!employee) {
       return res.status(401).json({

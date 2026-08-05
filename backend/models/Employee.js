@@ -38,19 +38,40 @@ const employeeSchema = new mongoose.Schema(
     designation: {
       type: String,
       enum: [
-        "Operational Head",
+        "Founder",
         "Manager",
         "Team Leader",
+        "Assistent Team Leader",
         "Senior Accountant",
         "Junior Accountant",
         "Trainee",
+        "Intern",
       ],
-      default: "Trainee",
+      default: "Junior Accountant",
     },
 
     designationLevel: {
       type: Number,
       default: 6,
+    },
+
+    reportsTo: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Employee",
+      default: null,
+    },
+
+    roles: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Role",
+      },
+    ],
+
+    activeRole: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Role",
+      default: null,
     },
 
     department: {
@@ -85,12 +106,6 @@ const employeeSchema = new mongoose.Schema(
       type: String,
       enum: ["Active", "Inactive"],
       default: "Active",
-    },
-
-    role: {
-      type: String,
-      enum: ["admin", "employee"],
-      default: "employee",
     },
 
     documents: {

@@ -15,15 +15,30 @@ export function AuthProvider({ children }) {
 
   const login = (userData, token) => {
     localStorage.setItem("token", token);
-
     localStorage.setItem("user", JSON.stringify(userData));
 
     setUser(userData);
   };
 
+  const updateUser = (userData) => {
+    localStorage.setItem("user", JSON.stringify(userData));
+    setUser(userData);
+  };
+
+  const updateActiveRole = (role) => {
+    if (!user) return;
+
+    const updatedUser = {
+      ...user,
+      activeRole: role,
+    };
+
+    localStorage.setItem("user", JSON.stringify(updatedUser));
+    setUser(updatedUser);
+  };
+
   const logout = () => {
     localStorage.removeItem("token");
-
     localStorage.removeItem("user");
 
     setUser(null);
@@ -34,6 +49,8 @@ export function AuthProvider({ children }) {
       value={{
         user,
         login,
+        updateUser,
+        updateActiveRole,
         logout,
       }}
     >

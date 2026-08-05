@@ -5,6 +5,8 @@ const bcrypt = require("bcryptjs");
 const Employee = require("../../models/Employee");
 const Job = require("../../models/Job");
 
+const Role = require("../../models/Role");
+
 // =====================================================
 // SEED DATABASE
 // =====================================================
@@ -17,6 +19,64 @@ router.post("/seed", async (req, res) => {
 
     await Employee.deleteMany({});
     await Job.deleteMany({});
+    await Role.deleteMany({});
+
+    // -------------------------------------------------
+    // ROLES
+    // -------------------------------------------------
+
+    const roleData = [
+      {
+        name: "Founder",
+        level: 1,
+        description: "Founder and highest organisational authority.",
+      },
+      {
+        name: "Manager",
+        level: 2,
+        description:
+          "Manages teams, operations, and organisational activities.",
+      },
+      {
+        name: "Team Leader",
+        level: 3,
+        description: "Leads and manages a team.",
+      },
+      {
+        name: "Assistent Team Leader",
+        level: 4,
+        description: "Supports the Team Leader in team management.",
+      },
+      {
+        name: "Senior Accountant",
+        level: 5,
+        description:
+          "Handles senior-level accounting and review responsibilities.",
+      },
+      {
+        name: "Junior Accountant",
+        level: 6,
+        description: "Handles junior-level accounting responsibilities.",
+      },
+      {
+        name: "Trainee",
+        level: 7,
+        description: "Employee undergoing structured training.",
+      },
+      {
+        name: "Intern",
+        level: 8,
+        description: "Intern working under organisational supervision.",
+      },
+    ];
+
+    const roles = await Role.insertMany(roleData);
+
+    const roleMap = {};
+
+    roles.forEach((role) => {
+      roleMap[role.name] = role;
+    });
 
     // -------------------------------------------------
     // EMPLOYEES
@@ -27,7 +87,7 @@ router.post("/seed", async (req, res) => {
         employeeCode: "EMP001",
         firstName: "Parth",
         lastName: "Soni",
-        designation: "Operational Head",
+        designation: "Founder",
         department: "IT",
         email: "parth@gmail.com",
         mobile: "9999999991",
@@ -105,6 +165,12 @@ router.post("/seed", async (req, res) => {
         ...emp,
 
         password: hashedPassword,
+
+        designationLevel: roleMap[emp.designation]?.level || 8,
+
+        roles: roleMap[emp.designation] ? [roleMap[emp.designation]._id] : [],
+
+        activeRole: roleMap[emp.designation]?._id || null,
 
         joiningDate: new Date("2026-01-20"),
 
@@ -651,6 +717,8 @@ router.post("/seed", async (req, res) => {
 
       message: "Database Seeded Successfully",
 
+      rolesCreated: roles.length,
+
       employeesCreated: employees.length,
 
       jobsCreated: 8,
@@ -675,6 +743,7 @@ router.delete("/reset", async (req, res) => {
   try {
     await Employee.deleteMany({});
     await Job.deleteMany({});
+    await Role.deleteMany({});
 
     res.json({
       success: true,

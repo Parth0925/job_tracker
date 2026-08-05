@@ -12,6 +12,7 @@ import MessageCenter from "../components/MessageCenter";
 import Reports from "../components/Reports";
 import ActiveTimers from "../components/ActiveTimers";
 import WorkHistory from "../components/WorkHistory";
+import Configurations from "../components/Configuration";
 
 import { useAuth } from "../context/AuthContext";
 
@@ -23,16 +24,6 @@ function DashboardLayout() {
   const { user } = useAuth();
 
   const renderModule = () => {
-    if (user.role === "employee") {
-      switch (active) {
-        case "Work History":
-          return <EmployeeDashboard employee={user} />;
-
-        default:
-          return <EmployeeDashboard employee={user} />;
-      }
-    }
-
     switch (active) {
       case "Employees":
         return <EmployeeManagement />;
@@ -51,6 +42,9 @@ function DashboardLayout() {
 
       case "Work History":
         return <WorkHistory />;
+
+      case "Configurations":
+        return <Configurations />;
 
       default:
         return <AdminDashboard />;

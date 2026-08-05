@@ -1,16 +1,27 @@
-import { Search, Bell, LogOut } from "lucide-react";
+import { Search, Bell, LogOut, ChevronDown } from "lucide-react";
 
 import { useAuth } from "../context/AuthContext";
 
 import "./Topbar.css";
 
 function Topbar() {
-  const { user, logout } = useAuth();
+  const { user, logout, updateActiveRole } = useAuth();
 
   const firstName = user?.firstName || "";
   const lastName = user?.lastName || "";
 
   const initials = `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
+
+  const roles = user?.roles || [];
+  const activeRole = user?.activeRole;
+
+  const handleRoleChange = (event) => {
+    const selectedRole = roles.find((role) => role._id === event.target.value);
+
+    if (selectedRole) {
+      updateActiveRole(selectedRole);
+    }
+  };
 
   return (
     <header className="topbar">
@@ -31,6 +42,24 @@ function Topbar() {
           <Bell size={18} />
         </button>
 
+        {roles.length > 0 && (
+          <div className="role-switcher">
+            <select
+              value={activeRole?._id || ""}
+              onChange={handleRoleChange}
+              aria-label="Switch active role"
+            >
+              {roles.map((role) => (
+                <option key={role._id} value={role._id}>
+                  {role.name}
+                </option>
+              ))}
+            </select>
+
+            <ChevronDown size={15} />
+          </div>
+        )}
+
         <div className="user-info">
           <div className="avatar">{initials}</div>
 
@@ -39,7 +68,7 @@ function Topbar() {
               {firstName} {lastName}
             </h4>
 
-            <span>{user?.role || "Employee"}</span>
+            <span>{activeRole?.name || user?.designation || "Employee"}</span>
           </div>
         </div>
 

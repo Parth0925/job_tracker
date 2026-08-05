@@ -42,7 +42,7 @@ const menus = [
     icon: History,
   },
   {
-    title: "Settings",
+    title: "Configurations",
     icon: Settings,
   },
 ];
