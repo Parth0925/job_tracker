@@ -1,11 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import Sidebar from "../components/Sidebar";
 import Topbar from "../components/Topbar";
 
 import AdminDashboard from "../components/AdminDashboard";
-import EmployeeDashboard from "../components/EmployeeDashboard";
-
 import EmployeeManagement from "../components/EmployeeManagement";
 import JobList from "../components/JobList";
 import MessageCenter from "../components/MessageCenter";
@@ -19,12 +17,37 @@ import { useAuth } from "../context/AuthContext";
 import "./DashboardLayout.css";
 
 function DashboardLayout() {
+  const { user } = useAuth();
+
+  const activeRole = user?.activeRole;
+  const pagePermissions = activeRole?.pagePermissions || [];
+
   const [active, setActive] = useState("Dashboard");
 
-  const { user } = useAuth();
+  useEffect(() => {
+    if (pagePermissions.length === 0) {
+      setActive("");
+      return;
+    }
+
+    if (!pagePermissions.includes(active)) {
+      setActive(pagePermissions[0]);
+    }
+  }, [activeRole?._id, pagePermissions, active]);
+
+  const handlePageChange = (page) => {
+    if (!pagePermissions.includes(page)) {
+      return;
+    }
+
+    setActive(page);
+  };
 
   const renderModule = () => {
     switch (active) {
+      case "Dashboard":
+        return <AdminDashboard />;
+
       case "Employees":
         return <EmployeeManagement />;
 
@@ -47,19 +70,28 @@ function DashboardLayout() {
         return <Configurations />;
 
       default:
-        return <AdminDashboard />;
+        return null;
     }
   };
 
   return (
     <div className="layout">
-      <Sidebar active={active} setActive={setActive} />
+      <Sidebar active={active} setActive={handlePageChange} />
 
       <div className="layout-content">
         <Topbar />
 
         <main className="page-content">
-          <div className="page-wrapper">{renderModule()}</div>
+          <div className="page-wrapper">
+            {pagePermissions.length === 0 ? (
+              <div className="configuration-empty">
+                <h3>No Page Access</h3>
+                <p>No pages have been assigned to your active role.</p>
+              </div>
+            ) : (
+              renderModule()
+            )}
+          </div>
         </main>
       </div>
     </div>

@@ -2,6 +2,8 @@ import { Search, Bell, LogOut, ChevronDown } from "lucide-react";
 
 import { useAuth } from "../context/AuthContext";
 
+import api from "../services/api";
+
 import "./Topbar.css";
 
 function Topbar() {
@@ -15,11 +17,23 @@ function Topbar() {
   const roles = user?.roles || [];
   const activeRole = user?.activeRole;
 
-  const handleRoleChange = (event) => {
+  const handleRoleChange = async (event) => {
     const selectedRole = roles.find((role) => role._id === event.target.value);
 
-    if (selectedRole) {
+    if (!selectedRole) return;
+
+    try {
+      await api.patch(`/employees/${user._id}/active-role`, {
+        activeRole: selectedRole._id,
+      });
+
       updateActiveRole(selectedRole);
+
+      // window.location.reload();
+    } catch (error) {
+      console.log("Role switch error:", error);
+
+      alert(error.response?.data?.message || "Failed to switch role.");
     }
   };
 

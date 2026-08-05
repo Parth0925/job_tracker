@@ -42,7 +42,13 @@ function EmployeeLogin() {
         password,
       });
 
-      login(response.data.employee, response.data.token);
+      const employee = response.data.employee;
+
+      if (employee.roles && employee.roles.length > 1 && !employee.activeRole) {
+        // we'll handle this next
+      }
+
+      login(employee, response.data.token);
     } catch (err) {
       setError(
         err.response?.data?.message || "Unable to login. Please try again.",

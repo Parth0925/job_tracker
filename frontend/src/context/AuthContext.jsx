@@ -34,6 +34,7 @@ export function AuthProvider({ children }) {
     };
 
     localStorage.setItem("user", JSON.stringify(updatedUser));
+
     setUser(updatedUser);
   };
 

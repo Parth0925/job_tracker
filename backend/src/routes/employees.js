@@ -217,4 +217,83 @@ router.get("/name/:name", async (req, res) => {
   }
 });
 
+// UPDATE ACTIVE ROLE
+router.patch("/:id/active-role", auth, async (req, res) => {
+  try {
+    const { activeRole } = req.body;
+
+    const employee = await Employee.findById(req.params.id);
+
+    if (!employee) {
+      return res.status(404).json({
+        message: "Employee not found.",
+      });
+    }
+
+    const roleExists = employee.roles.some(
+      (roleId) => roleId.toString() === activeRole,
+    );
+
+    if (!roleExists) {
+      return res.status(400).json({
+        message: "This role is not assigned to the employee.",
+      });
+    }
+
+    employee.activeRole = activeRole;
+
+    await employee.save();
+
+    await employee.populate("roles");
+    await employee.populate("activeRole");
+
+    res.json(employee);
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+});
+
+// UPDATE EMPLOYEE ROLES
+router.patch("/:id/roles", auth, async (req, res) => {
+  try {
+    const { roles } = req.body;
+
+    if (!Array.isArray(roles)) {
+      return res.status(400).json({
+        message: "Roles must be an array.",
+      });
+    }
+
+    const employee = await Employee.findById(req.params.id);
+
+    if (!employee) {
+      return res.status(404).json({
+        message: "Employee not found.",
+      });
+    }
+
+    employee.roles = roles;
+
+    if (
+      !employee.activeRole ||
+      !roles.includes(employee.activeRole.toString())
+    ) {
+      employee.activeRole = roles.length ? roles[0] : null;
+    }
+
+    await employee.save();
+
+    await employee.populate("roles");
+    await employee.populate("activeRole");
+
+    res.json(employee);
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+});
+
 module.exports = router;

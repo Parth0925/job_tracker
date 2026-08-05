@@ -306,3 +306,52 @@
     font-size: 14px;
   }
 }
+
+.role-switcher {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.role-switcher select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+
+  min-width: 170px;
+  height: 38px;
+
+  padding: 0 36px 0 14px;
+
+  border: 1px solid #dbe3ef;
+  border-radius: 10px;
+
+  background: #fff;
+
+  font-size: 14px;
+  font-weight: 500;
+  color: #1f2937;
+
+  cursor: pointer;
+  outline: none;
+
+  transition: all 0.2s ease;
+}
+
+.role-switcher select:hover {
+  border-color: #2563eb;
+}
+
+.role-switcher select:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.role-switcher svg {
+  position: absolute;
+  right: 12px;
+
+  pointer-events: none;
+
+  color: #64748b;
+}

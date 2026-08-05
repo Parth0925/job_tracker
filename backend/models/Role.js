@@ -18,6 +18,10 @@ const roleSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    pagePermissions: {
+      type: [String],
+      default: [],
+    },
   },
   { timestamps: true },
 );

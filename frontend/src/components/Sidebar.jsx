@@ -10,6 +10,8 @@ import {
   ChevronRight,
 } from "lucide-react";
 
+import { useAuth } from "../context/AuthContext";
+
 import "./Sidebar.css";
 
 const menus = [
@@ -48,6 +50,16 @@ const menus = [
 ];
 
 function Sidebar({ active, setActive }) {
+  const { user } = useAuth();
+
+  const activeRole = user?.activeRole;
+
+  const allowedPages = activeRole?.pagePermissions || [];
+
+  const visibleMenus = menus.filter((item) =>
+    allowedPages.includes(item.title),
+  );
+
   return (
     <aside className="sidebar">
       <div className="sidebar-logo">
@@ -62,7 +74,7 @@ function Sidebar({ active, setActive }) {
       <div className="sidebar-section-label">MAIN MENU</div>
 
       <nav className="sidebar-menu">
-        {menus.map((item) => {
+        {visibleMenus.map((item) => {
           const Icon = item.icon;
           const isActive = active === item.title;
 
