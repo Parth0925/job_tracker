@@ -30,6 +30,7 @@ router.get("/:id/permissions", auth, async (req, res) => {
     res.json({
       pagePermissions: role.pagePermissions || [],
       messagePermission: role.messagePermission || "Individual",
+      receiveAllMessages: role.receiveAllMessages || false,
     });
   } catch (error) {
     res.status(500).json({
@@ -41,7 +42,7 @@ router.get("/:id/permissions", auth, async (req, res) => {
 // UPDATE ROLE PAGE PERMISSIONS
 router.put("/:id/permissions", auth, async (req, res) => {
   try {
-    const { pagePermissions, messagePermission } = req.body;
+    const { pagePermissions, messagePermission, receiveAllMessages } = req.body;
     const finalMessagePermission = messagePermission || "Individual";
 
     if (!Array.isArray(pagePermissions)) {
@@ -61,6 +62,7 @@ router.put("/:id/permissions", auth, async (req, res) => {
       {
         pagePermissions,
         messagePermission: finalMessagePermission,
+        receiveAllMessages: receiveAllMessages === true,
       },
       {
         new: true,

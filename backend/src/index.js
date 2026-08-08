@@ -13,6 +13,7 @@ const devRoutes = require("./routes/dev");
 const authRoutes = require("./routes/auth");
 const priorityRulesRoutes = require("./routes/priorityRules");
 const rolesRoutes = require("./routes/roles");
+const notificationsRoutes = require("./routes/notifications");
 
 const path = require("path");
 
@@ -53,6 +54,7 @@ app.use("/api/dev", devRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/priority-rules", priorityRulesRoutes);
 app.use("/api/roles", rolesRoutes);
+app.use("/api/notifications", notificationsRoutes);
 
 app.get("/", (req, res) => {
   res.send("Internal Job System API is running");

@@ -14,9 +14,21 @@ const messageSchema = new mongoose.Schema(
       required: true,
     },
 
+    receivers: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Employee",
+      },
+    ],
+
     message: {
       type: String,
       required: true,
+    },
+
+    isRead: {
+      type: Boolean,
+      default: false,
     },
 
     isSystemMessage: {

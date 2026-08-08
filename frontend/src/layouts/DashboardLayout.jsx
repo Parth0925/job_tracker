@@ -24,6 +24,7 @@ function DashboardLayout() {
   const pagePermissions = activeRole?.pagePermissions || [];
 
   const [active, setActive] = useState("Dashboard");
+  const [selectedMessageId, setSelectedMessageId] = useState(null);
 
   useEffect(() => {
     if (pagePermissions.length === 0) {
@@ -36,11 +37,12 @@ function DashboardLayout() {
     }
   }, [activeRole?._id, pagePermissions, active]);
 
-  const handlePageChange = (page) => {
+  const handlePageChange = (page, messageId = null) => {
     if (!pagePermissions.includes(page)) {
       return;
     }
 
+    setSelectedMessageId(messageId);
     setActive(page);
   };
 
@@ -59,7 +61,12 @@ function DashboardLayout() {
         return <JobList />;
 
       case "Messages":
-        return <MessageCenter />;
+        return (
+          <MessageCenter
+            selectedMessageId={selectedMessageId}
+            onMessageOpened={() => setSelectedMessageId(null)}
+          />
+        );
 
       case "Reports":
         return <Reports />;
@@ -83,7 +90,7 @@ function DashboardLayout() {
       <Sidebar active={active} setActive={handlePageChange} />
 
       <div className="layout-content">
-        <Topbar />
+        <Topbar onPageChange={handlePageChange} />
 
         <main className="page-content">
           <div className="page-wrapper">

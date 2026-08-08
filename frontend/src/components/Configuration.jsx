@@ -14,6 +14,7 @@ function Configurations() {
   const [selectedPermissionRole, setSelectedPermissionRole] = useState("");
   const [pagePermissions, setPagePermissions] = useState([]);
   const [messagePermission, setMessagePermission] = useState("Individual");
+  const [receiveAllMessages, setReceiveAllMessages] = useState(false);
   const [loadingRoles, setLoadingRoles] = useState(false);
 
   const [showRoleModal, setShowRoleModal] = useState(false);
@@ -77,6 +78,7 @@ function Configurations() {
 
       setPagePermissions(response.data.pagePermissions || []);
       setMessagePermission(response.data.messagePermission || "Individual");
+      setReceiveAllMessages(response.data.receiveAllMessages || false);
     } catch (error) {
       console.log("Permission fetch error:", error);
 
@@ -351,6 +353,7 @@ function Configurations() {
                       {
                         pagePermissions,
                         messagePermission,
+                        receiveAllMessages,
                       },
                     );
 
@@ -423,6 +426,17 @@ function Configurations() {
                           checked={messagePermission === "Individual"}
                           onChange={() =>
                             handleMessagePermissionChange("Individual")
+                          }
+                        />
+                      </label>
+                      <label className="permission-item">
+                        <span>View/Receive All Messages</span>
+
+                        <input
+                          type="checkbox"
+                          checked={receiveAllMessages}
+                          onChange={(e) =>
+                            setReceiveAllMessages(e.target.checked)
                           }
                         />
                       </label>
