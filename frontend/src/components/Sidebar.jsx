@@ -8,6 +8,7 @@ import {
   History,
   Settings,
   ChevronRight,
+  Network,
 } from "lucide-react";
 
 import { useAuth } from "../context/AuthContext";
@@ -26,6 +27,10 @@ const menus = [
   {
     title: "Employees",
     icon: Users,
+  },
+  {
+    title: "Organisation",
+    icon: Network,
   },
   {
     title: "Jobs",

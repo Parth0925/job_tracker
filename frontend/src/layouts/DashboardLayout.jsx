@@ -12,6 +12,7 @@ import Reports from "../components/Reports";
 import ActiveTimers from "../components/ActiveTimers";
 import WorkHistory from "../components/WorkHistory";
 import Configurations from "../components/Configuration";
+import Organisation from "../components/Organisation";
 
 import { useAuth } from "../context/AuthContext";
 
@@ -56,6 +57,9 @@ function DashboardLayout() {
 
       case "Employees":
         return <EmployeeManagement />;
+
+      case "Organisation":
+        return <Organisation />;
 
       case "Jobs":
         return <JobList />;

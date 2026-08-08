@@ -1148,7 +1148,7 @@ function EmployeeManagement() {
         </div>
       )}
 
-      <section className="organisation-section">
+      {/* <section className="organisation-section">
         <div className="employees-header">
           <div>
             <span className="section-eyebrow">Organisation</span>
@@ -1200,13 +1200,13 @@ function EmployeeManagement() {
             )}
           </div>
         )}
-      </section>
+      </section> */}
 
       <section className="employees-section">
         <div className="employees-header">
           <div>
-            <span className="section-eyebrow">Directory</span>
-            <h2>Employees</h2>
+            {/* <span className="section-eyebrow">Directory</span> */}
+            {/* <h2>Employees</h2> */}
             <p>
               Showing {filteredEmployees.length} of {employees.length} employees
             </p>

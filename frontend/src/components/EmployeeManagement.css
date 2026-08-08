@@ -2,18 +2,25 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 28px;
+  gap: 30px;
+  box-sizing: border-box;
 }
 
-/* =========================
+.employee-management *,
+.employee-management *::before,
+.employee-management *::after {
+  box-sizing: border-box;
+}
+
+/* =========================================================
    PAGE HEADER
-========================= */
+========================================================= */
 
 .section-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 20px;
+  gap: 24px;
 }
 
 .section-header .add-btn {
@@ -22,7 +29,7 @@
 
 .section-eyebrow {
   display: inline-block;
-  margin-bottom: 6px;
+  margin-bottom: 7px;
   color: #2563eb;
   font-size: 11px;
   font-weight: 700;
@@ -37,6 +44,7 @@
   font-size: 30px;
   font-weight: 700;
   line-height: 1.2;
+  letter-spacing: -0.02em;
 }
 
 .section-header p {
@@ -48,8 +56,8 @@
 }
 
 .employee-count-card {
-  min-width: 145px;
-  padding: 16px 20px;
+  min-width: 150px;
+  padding: 16px 22px;
   border: 1px solid #dbe2ea;
   border-radius: 14px;
   background: #ffffff;
@@ -72,9 +80,9 @@
   font-weight: 600;
 }
 
-/* =========================
+/* =========================================================
    FORM
-========================= */
+========================================================= */
 
 .employee-form {
   display: flex;
@@ -105,6 +113,7 @@
   color: #1f2937;
   font-size: 17px;
   font-weight: 700;
+  line-height: 1.3;
 }
 
 .form-section-header p,
@@ -123,7 +132,7 @@
 .form-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 18px;
+  gap: 18px 20px;
 }
 
 .form-field {
@@ -151,9 +160,11 @@
   margin-top: 6px;
   color: #94a3b8;
   font-size: 11px;
+  line-height: 1.4;
 }
 
 .form-input {
+  box-sizing: border-box;
   width: 100%;
   height: 46px;
   padding: 0 14px;
@@ -240,9 +251,9 @@ textarea.form-input {
   background: #16a34a;
 }
 
-/* =========================
+/* =========================================================
    DOCUMENTS
-========================= */
+========================================================= */
 
 .documents-section {
   margin-top: 26px;
@@ -328,9 +339,9 @@ textarea.form-input {
   font-size: 10px;
 }
 
-/* =========================
+/* =========================================================
    FORM ACTIONS
-========================= */
+========================================================= */
 
 .form-actions {
   display: flex;
@@ -402,9 +413,9 @@ textarea.form-input {
   }
 }
 
-/* =========================
+/* =========================================================
    ORGANISATION
-========================= */
+========================================================= */
 
 .organisation-section,
 .employees-section {
@@ -424,6 +435,7 @@ textarea.form-input {
   color: #111827;
   font-size: 22px;
   font-weight: 700;
+  letter-spacing: -0.01em;
 }
 
 .employees-header p {
@@ -435,7 +447,7 @@ textarea.form-input {
 .organisation-tree {
   width: 100%;
   min-width: 0;
-  padding: 28px;
+  padding: 18px;
   overflow-x: auto;
   border: 1px solid #e5e7eb;
   border-radius: 18px;
@@ -467,7 +479,7 @@ textarea.form-input {
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  gap: 50px;
+  gap: 24px;
 }
 
 .organisation-node {
@@ -486,14 +498,14 @@ textarea.form-input {
 
 .organisation-card {
   position: relative;
-  width: 285px;
-  min-width: 285px;
-  padding: 15px;
+  width: 240px;
+  min-width: 240px;
+  padding: 11px;
   display: flex;
   flex-direction: column;
-  gap: 13px;
+  gap: 9px;
   border: 1px solid #e2e8f0;
-  border-radius: 14px;
+  border-radius: 12px;
   background: #ffffff;
   color: inherit;
   text-align: left;
@@ -524,15 +536,16 @@ textarea.form-input {
 .organisation-card-main {
   display: flex;
   align-items: center;
-  gap: 11px;
+  gap: 8px;
 }
 
 .organisation-card .employee-avatar {
-  width: 44px;
-  height: 44px;
+  width: 36px;
+  height: 36px;
   margin: 0;
   flex-shrink: 0;
-  font-size: 13px;
+  border-radius: 10px;
+  font-size: 11px;
 }
 
 .organisation-card-info {
@@ -624,12 +637,12 @@ textarea.form-input {
 
 .organisation-children {
   position: relative;
-  margin-top: 48px;
-  padding-top: 28px;
+  margin-top: 32px;
+  padding-top: 22px;
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  gap: 32px;
+  gap: 18px;
 }
 
 .organisation-children::before {
@@ -638,7 +651,7 @@ textarea.form-input {
   top: 0;
   left: 50%;
   width: 1px;
-  height: 28px;
+  height: 22px;
   background: #cbd5e1;
 }
 
@@ -655,10 +668,10 @@ textarea.form-input {
 .organisation-children > .organisation-node::before {
   content: "";
   position: absolute;
-  top: -28px;
+  top: -22px;
   left: 50%;
   width: 1px;
-  height: 28px;
+  height: 22px;
   background: #cbd5e1;
 }
 
@@ -685,9 +698,10 @@ textarea.form-input {
   color: #94a3b8;
   font-size: 11px;
 }
-/* =========================
-   EMPLOYEE CARDS
-========================= */
+
+/* =========================================================
+   EMPLOYEE SEARCH / TABLE
+========================================================= */
 
 .employee-search-wrapper {
   position: relative;
@@ -696,9 +710,10 @@ textarea.form-input {
 }
 
 .search-input {
+  box-sizing: border-box;
   width: 100%;
   height: 44px;
-  padding: 0 40px 0 40px;
+  padding: 0 40px;
   border: 1px solid #dbe2ea;
   border-radius: 11px;
   outline: none;
@@ -708,6 +723,10 @@ textarea.form-input {
   transition:
     border-color 0.2s ease,
     box-shadow 0.2s ease;
+}
+
+.search-input:hover {
+  border-color: #cbd5e1;
 }
 
 .search-input:focus {
@@ -750,12 +769,171 @@ textarea.form-input {
   background: #e2e8f0;
   color: #111827;
 }
-/* 
-.employees-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 16px;
-} */
+
+/* =========================================================
+   EMPLOYEE TABLE
+========================================================= */
+
+.employees-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 3px 12px rgba(15, 23, 42, 0.035);
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+.employees-table-wrapper::-webkit-scrollbar {
+  height: 7px;
+}
+
+.employees-table-wrapper::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 20px;
+}
+
+.employees-table {
+  width: 100%;
+  min-width: 900px;
+  border-collapse: separate;
+  border-spacing: 0;
+  table-layout: auto;
+}
+
+.employees-table thead {
+  background: #f8fafc;
+}
+
+.employees-table th {
+  padding: 14px 18px;
+  border-bottom: 1px solid #e5e7eb;
+  color: #64748b;
+  font-size: 10px;
+  font-weight: 700;
+  text-align: left;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.employees-table th:first-child {
+  border-top-left-radius: 15px;
+}
+
+.employees-table th:last-child {
+  border-top-right-radius: 15px;
+}
+
+.employees-table td {
+  padding: 15px 18px;
+  border-bottom: 1px solid #f1f5f9;
+  color: #475569;
+  font-size: 12px;
+  font-weight: 500;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.employees-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.employees-table tbody tr {
+  transition: background 0.18s ease;
+}
+
+.employees-table tbody tr:hover {
+  background: #f8fafc;
+}
+
+.employees-table td strong {
+  color: #2563eb;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* =========================================================
+   STATUS
+========================================================= */
+
+.employees-table .status-badge {
+  min-width: 68px;
+  padding: 5px 10px;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px 9px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.active-status {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.inactive-status {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.resigned-status {
+  background: #fee2e2;
+  color: #b91c1c;
+  border-color: #fecaca;
+}
+
+/* =========================================================
+   VIEW BUTTON
+========================================================= */
+
+.employee-view-button {
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #dbe2ea;
+  border-radius: 9px;
+  background: #ffffff;
+  color: #64748b;
+  cursor: pointer;
+  transition:
+    color 0.2s ease,
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.employee-view-button:hover {
+  border-color: #bfdbfe;
+  background: #eff6ff;
+  color: #2563eb;
+  transform: translateY(-1px);
+}
+
+.employee-view-button:focus-visible {
+  outline: 3px solid rgba(37, 99, 235, 0.16);
+  outline-offset: 2px;
+}
+
+.employee-view-icon {
+  width: 17px;
+  height: 17px;
+  display: block;
+}
+
+/* =========================================================
+   EMPLOYEE CARDS
+========================================================= */
 
 .employee-card {
   min-width: 0;
@@ -807,27 +985,6 @@ textarea.form-input {
   color: #ffffff;
   font-size: 18px;
   font-weight: 700;
-}
-
-.status-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 5px 9px;
-  border-radius: 999px;
-  font-size: 10px;
-  font-weight: 700;
-  white-space: nowrap;
-}
-
-.active-status {
-  background: #dcfce7;
-  color: #15803d;
-}
-
-.inactive-status {
-  background: #fee2e2;
-  color: #b91c1c;
 }
 
 .employee-card-body {
@@ -890,9 +1047,9 @@ textarea.form-input {
   font-weight: 700;
 }
 
-/* =========================
+/* =========================================================
    EMPTY STATE
-========================= */
+========================================================= */
 
 .empty-state {
   padding: 50px 20px;
@@ -927,9 +1084,9 @@ textarea.form-input {
   font-size: 13px;
 }
 
-/* =========================
+/* =========================================================
    MODAL
-========================= */
+========================================================= */
 
 .employee-modal-overlay {
   position: fixed;
@@ -1183,6 +1340,32 @@ textarea.form-input {
   white-space: pre-wrap;
 }
 
+.profile-actions {
+  display: flex;
+  justify-content: flex-start;
+  margin-top: 12px;
+}
+
+.resign-button {
+  border: 1px solid #dc2626;
+  background: transparent;
+  color: #dc2626;
+  padding: 9px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.resign-button:hover {
+  background: #dc2626;
+  color: #ffffff;
+}
+
 @keyframes employee-modal-fade {
   from {
     opacity: 0;
@@ -1205,17 +1388,17 @@ textarea.form-input {
   }
 }
 
-/* =========================
+/* =========================================================
    RESPONSIVE
-========================= */
+========================================================= */
 
 @media (max-width: 1100px) {
   .document-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .employees-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .employees-table {
+    min-width: 860px;
   }
 }
 
@@ -1274,12 +1457,12 @@ textarea.form-input {
     width: 100%;
   }
 
-  .employees-grid {
-    grid-template-columns: 1fr;
-  }
-
   .organisation-tree {
     padding: 16px;
+  }
+
+  .organisation-roots {
+    justify-content: flex-start;
   }
 
   .organisation-card {
@@ -1336,6 +1519,11 @@ textarea.form-input {
     padding: 12px;
   }
 
+  .organisation-tree-hint {
+    margin-left: 0;
+    margin-right: 0;
+  }
+
   .organisation-employees {
     gap: 9px;
   }
@@ -1359,167 +1547,4 @@ textarea.form-input {
     top: 12px;
     right: 12px;
   }
-}
-
-@media (max-width: 700px) {
-  .organisation-tree {
-    padding: 16px;
-  }
-
-  .organisation-roots {
-    justify-content: flex-start;
-  }
-}
-
-@media (max-width: 520px) {
-  .organisation-tree {
-    padding: 12px;
-  }
-
-  .organisation-tree-hint {
-    margin-left: 0;
-    margin-right: 0;
-  }
-}
-
-.profile-actions {
-  display: flex;
-  justify-content: flex-start;
-  margin-top: 12px;
-}
-
-.resign-button {
-  border: 1px solid #dc2626;
-  background: transparent;
-  color: #dc2626;
-  padding: 9px 16px;
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.resign-button:hover {
-  background: #dc2626;
-  color: #ffffff;
-}
-
-.resigned-status {
-  background: #fee2e2;
-  color: #b91c1c;
-  border-color: #fecaca;
-}
-
-/* =========================
-   EMPLOYEE TABLE
-========================= */
-
-.employees-table-wrapper {
-  width: 100%;
-  overflow-x: auto;
-  border: 1px solid #e5e7eb;
-  border-radius: 16px;
-  background: #ffffff;
-  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.025);
-}
-
-.employees-table {
-  width: 100%;
-  min-width: 900px;
-  border-collapse: collapse;
-  table-layout: auto;
-}
-
-.employees-table thead {
-  background: #f8fafc;
-}
-
-.employees-table th {
-  padding: 14px 18px;
-  border-bottom: 1px solid #e5e7eb;
-  color: #64748b;
-  font-size: 10px;
-  font-weight: 700;
-  text-align: left;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  white-space: nowrap;
-}
-
-.employees-table td {
-  padding: 15px 18px;
-  border-bottom: 1px solid #f1f5f9;
-  color: #475569;
-  font-size: 12px;
-  font-weight: 500;
-  vertical-align: middle;
-}
-
-.employees-table tbody tr:last-child td {
-  border-bottom: none;
-}
-
-.employees-table tbody tr {
-  transition: background 0.18s ease;
-}
-
-.employees-table tbody tr:hover {
-  background: #f8fafc;
-}
-
-.employees-table td strong {
-  color: #2563eb;
-  font-size: 11px;
-  font-weight: 700;
-}
-
-/* =========================
-   STATUS
-========================= */
-
-.employees-table .status-badge {
-  min-width: 68px;
-  padding: 5px 10px;
-}
-
-/* =========================
-   VIEW BUTTON
-========================= */
-
-.employee-view-button {
-  width: 34px;
-  height: 34px;
-  padding: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid #dbe2ea;
-  border-radius: 9px;
-  background: #ffffff;
-  color: #64748b;
-  cursor: pointer;
-  transition:
-    color 0.2s ease,
-    background 0.2s ease,
-    border-color 0.2s ease,
-    transform 0.2s ease;
-}
-
-.employee-view-button:hover {
-  border-color: #bfdbfe;
-  background: #eff6ff;
-  color: #2563eb;
-  transform: translateY(-1px);
-}
-
-.employee-view-button:focus-visible {
-  outline: 3px solid rgba(37, 99, 235, 0.16);
-  outline-offset: 2px;
-}
-
-.employee-view-icon {
-  width: 17px;
-  height: 17px;
-  display: block;
 }
