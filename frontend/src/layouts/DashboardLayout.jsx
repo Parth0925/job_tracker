@@ -4,6 +4,7 @@ import Sidebar from "../components/Sidebar";
 import Topbar from "../components/Topbar";
 
 import AdminDashboard from "../components/AdminDashboard";
+import EmployeeDashboard from "../components/EmployeeDashboard";
 import EmployeeManagement from "../components/EmployeeManagement";
 import JobList from "../components/JobList";
 import MessageCenter from "../components/MessageCenter";
@@ -47,6 +48,9 @@ function DashboardLayout() {
     switch (active) {
       case "Dashboard":
         return <AdminDashboard />;
+
+      case "Employee Dashboard":
+        return <EmployeeDashboard employee={user} />;
 
       case "Employees":
         return <EmployeeManagement />;

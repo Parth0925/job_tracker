@@ -11,9 +11,13 @@
 
 .section-header {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   gap: 20px;
+}
+
+.section-header .add-btn {
+  flex-shrink: 0;
 }
 
 .section-eyebrow {
@@ -746,12 +750,12 @@ textarea.form-input {
   background: #e2e8f0;
   color: #111827;
 }
-
+/* 
 .employees-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   gap: 16px;
-}
+} */
 
 .employee-card {
   min-width: 0;
@@ -1236,6 +1240,11 @@ textarea.form-input {
 @media (max-width: 700px) {
   .section-header {
     flex-direction: column;
+    align-items: stretch;
+  }
+
+  .section-header .add-btn {
+    width: 100%;
   }
 
   .employee-count-card {
@@ -1371,4 +1380,146 @@ textarea.form-input {
     margin-left: 0;
     margin-right: 0;
   }
+}
+
+.profile-actions {
+  display: flex;
+  justify-content: flex-start;
+  margin-top: 12px;
+}
+
+.resign-button {
+  border: 1px solid #dc2626;
+  background: transparent;
+  color: #dc2626;
+  padding: 9px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.resign-button:hover {
+  background: #dc2626;
+  color: #ffffff;
+}
+
+.resigned-status {
+  background: #fee2e2;
+  color: #b91c1c;
+  border-color: #fecaca;
+}
+
+/* =========================
+   EMPLOYEE TABLE
+========================= */
+
+.employees-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.025);
+}
+
+.employees-table {
+  width: 100%;
+  min-width: 900px;
+  border-collapse: collapse;
+  table-layout: auto;
+}
+
+.employees-table thead {
+  background: #f8fafc;
+}
+
+.employees-table th {
+  padding: 14px 18px;
+  border-bottom: 1px solid #e5e7eb;
+  color: #64748b;
+  font-size: 10px;
+  font-weight: 700;
+  text-align: left;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.employees-table td {
+  padding: 15px 18px;
+  border-bottom: 1px solid #f1f5f9;
+  color: #475569;
+  font-size: 12px;
+  font-weight: 500;
+  vertical-align: middle;
+}
+
+.employees-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.employees-table tbody tr {
+  transition: background 0.18s ease;
+}
+
+.employees-table tbody tr:hover {
+  background: #f8fafc;
+}
+
+.employees-table td strong {
+  color: #2563eb;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* =========================
+   STATUS
+========================= */
+
+.employees-table .status-badge {
+  min-width: 68px;
+  padding: 5px 10px;
+}
+
+/* =========================
+   VIEW BUTTON
+========================= */
+
+.employee-view-button {
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #dbe2ea;
+  border-radius: 9px;
+  background: #ffffff;
+  color: #64748b;
+  cursor: pointer;
+  transition:
+    color 0.2s ease,
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.employee-view-button:hover {
+  border-color: #bfdbfe;
+  background: #eff6ff;
+  color: #2563eb;
+  transform: translateY(-1px);
+}
+
+.employee-view-button:focus-visible {
+  outline: 3px solid rgba(37, 99, 235, 0.16);
+  outline-offset: 2px;
+}
+
+.employee-view-icon {
+  width: 17px;
+  height: 17px;
+  display: block;
 }

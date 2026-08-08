@@ -1,24 +1,35 @@
 import { useEffect, useMemo, useState } from "react";
+import { useAuth } from "../context/AuthContext";
 import api from "../services/api";
 import CommonCard from "./CommonCard";
 import JobDiscussion from "./JobDiscussion";
 import "./MessageCenter.css";
 
 function MessageCenter() {
+  const { user } = useAuth();
+
   const [jobs, setJobs] = useState([]);
   const [selectedJob, setSelectedJob] = useState(null);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    if (!user?._id) return;
+
     fetchJobs();
-  }, []);
+  }, [user?._id, user?.activeRole?._id, user?.activeRole?.messagePermission]);
 
   const fetchJobs = async () => {
     try {
       setLoading(true);
 
-      const response = await api.get("/jobs");
+      const messagePermission =
+        user?.activeRole?.messagePermission || "Individual";
+
+      const response =
+        messagePermission === "All"
+          ? await api.get("/jobs")
+          : await api.get(`/jobs/employee/${user?._id}`);
 
       setJobs(response.data);
 
@@ -29,6 +40,8 @@ function MessageCenter() {
 
         if (updatedSelectedJob) {
           setSelectedJob(updatedSelectedJob);
+        } else {
+          setSelectedJob(null);
         }
       }
     } catch (error) {
@@ -79,7 +92,8 @@ LEFT JOB SIDEBAR
                 <h3>Job Discussions</h3>
 
                 <span>
-                  {jobs.length} {jobs.length === 1 ? "job" : "jobs"}
+                  {filteredJobs.length}{" "}
+                  {filteredJobs.length === 1 ? "job" : "jobs"}
                 </span>
               </div>
 

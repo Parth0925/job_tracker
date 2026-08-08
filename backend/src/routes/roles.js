@@ -29,6 +29,7 @@ router.get("/:id/permissions", auth, async (req, res) => {
 
     res.json({
       pagePermissions: role.pagePermissions || [],
+      messagePermission: role.messagePermission || "Individual",
     });
   } catch (error) {
     res.status(500).json({
@@ -40,7 +41,8 @@ router.get("/:id/permissions", auth, async (req, res) => {
 // UPDATE ROLE PAGE PERMISSIONS
 router.put("/:id/permissions", auth, async (req, res) => {
   try {
-    const { pagePermissions } = req.body;
+    const { pagePermissions, messagePermission } = req.body;
+    const finalMessagePermission = messagePermission || "Individual";
 
     if (!Array.isArray(pagePermissions)) {
       return res.status(400).json({
@@ -48,10 +50,17 @@ router.put("/:id/permissions", auth, async (req, res) => {
       });
     }
 
+    if (!["All", "Individual"].includes(finalMessagePermission)) {
+      return res.status(400).json({
+        message: "messagePermission must be All or Individual.",
+      });
+    }
+
     const role = await Role.findByIdAndUpdate(
       req.params.id,
       {
         pagePermissions,
+        messagePermission: finalMessagePermission,
       },
       {
         new: true,

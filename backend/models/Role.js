@@ -22,6 +22,11 @@ const roleSchema = new mongoose.Schema(
       type: [String],
       default: [],
     },
+    messagePermission: {
+      type: String,
+      enum: ["All", "Individual"],
+      default: "Individual",
+    },
   },
   { timestamps: true },
 );

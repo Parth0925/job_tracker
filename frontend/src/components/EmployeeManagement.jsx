@@ -35,6 +35,8 @@ function EmployeeManagement() {
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [showModal, setShowModal] = useState(false);
 
+  const [showAddEmployeeModal, setShowAddEmployeeModal] = useState(false);
+
   const [searchTerm, setSearchTerm] = useState("");
   const [formError, setFormError] = useState("");
   const [formSuccess, setFormSuccess] = useState("");
@@ -51,10 +53,11 @@ function EmployeeManagement() {
     const handleEscape = (event) => {
       if (event.key === "Escape") {
         setShowModal(false);
+        setShowAddEmployeeModal(false);
       }
     };
 
-    if (showModal) {
+    if (showModal || showAddEmployeeModal) {
       document.addEventListener("keydown", handleEscape);
       document.body.style.overflow = "hidden";
     }
@@ -63,7 +66,7 @@ function EmployeeManagement() {
       document.removeEventListener("keydown", handleEscape);
       document.body.style.overflow = "";
     };
-  }, [showModal]);
+  }, [showModal, showAddEmployeeModal]);
 
   const fetchEmployees = async () => {
     try {
@@ -236,7 +239,8 @@ function EmployeeManagement() {
 
       setTimeout(() => {
         setFormSuccess("");
-      }, 4000);
+        setShowAddEmployeeModal(false);
+      }, 1200);
     } catch (error) {
       console.log("Add employee error:", error);
 
@@ -280,6 +284,42 @@ function EmployeeManagement() {
   const closeEmployeeModal = () => {
     setShowModal(false);
     setSelectedEmployee(null);
+  };
+
+  const closeAddEmployeeModal = () => {
+    setShowAddEmployeeModal(false);
+    setFormError("");
+    setFormSuccess("");
+  };
+
+  const handleResignEmployee = async () => {
+    if (!selectedEmployee) return;
+
+    const confirmed = window.confirm(
+      `Are you sure you want to mark ${selectedEmployee.firstName} ${selectedEmployee.lastName} as resigned?`,
+    );
+
+    if (!confirmed) return;
+
+    try {
+      await api.patch(`/employees/${selectedEmployee._id}/resign`);
+
+      await fetchEmployees();
+
+      const response = await api.get(`/employees`);
+      const updatedEmployee = response.data?.find(
+        (employee) => employee._id === selectedEmployee._id,
+      );
+
+      setSelectedEmployee(updatedEmployee || null);
+    } catch (error) {
+      console.log("Resign employee error:", error);
+
+      setFormError(
+        error?.response?.data?.message ||
+          "Unable to mark employee as resigned.",
+      );
+    }
   };
 
   const formatDate = (date) => {
@@ -540,7 +580,7 @@ function EmployeeManagement() {
         <div>
           <span className="section-eyebrow">Employee Management</span>
 
-          <h1>Add Employee</h1>
+          <h1>Employees</h1>
 
           <p>
             Create and manage employee profiles, documents and organisation
@@ -548,462 +588,565 @@ function EmployeeManagement() {
           </p>
         </div>
 
-        <div className="employee-count-card">
-          <strong>{employees.length}</strong>
-          <span>Total Employees</span>
-        </div>
-      </div>
+        <div className="section-header-actions">
+          {/* <div className="employee-count-card">
+            <strong>{employees.length}</strong>
+            <span>Total Employees</span>
+          </div> */}
 
-      <form className="employee-form" onSubmit={handleAddEmployee} noValidate>
-        {formError && (
-          <div className="form-alert form-alert-error" role="alert">
-            <span className="alert-icon">!</span>
-            <span>{formError}</span>
-          </div>
-        )}
-
-        {formSuccess && (
-          <div className="form-alert form-alert-success" role="status">
-            <span className="alert-icon">✓</span>
-            <span>{formSuccess}</span>
-          </div>
-        )}
-
-        <div className="form-section">
-          <div className="form-section-header">
-            <div>
-              <h3>Basic Information</h3>
-              <p>Enter the employee's personal and contact details.</p>
-            </div>
-
-            <span className="required-note">* Required</span>
-          </div>
-
-          <div className="form-grid">
-            <div className="form-field">
-              <label className="field-label" htmlFor="firstName">
-                First Name <span>*</span>
-              </label>
-
-              <input
-                id="firstName"
-                className="form-input"
-                placeholder="Enter first name"
-                value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
-                required
-              />
-            </div>
-
-            <div className="form-field">
-              <label className="field-label" htmlFor="lastName">
-                Last Name <span>*</span>
-              </label>
-
-              <input
-                id="lastName"
-                className="form-input"
-                placeholder="Enter last name"
-                value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
-                required
-              />
-            </div>
-
-            <div className="form-field">
-              <label className="field-label" htmlFor="email">
-                Email Address
-              </label>
-
-              <input
-                id="email"
-                className="form-input"
-                type="email"
-                placeholder="employee@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-
-            <div className="form-field">
-              <label className="field-label" htmlFor="mobile">
-                Mobile Number
-              </label>
-
-              <input
-                id="mobile"
-                className="form-input"
-                type="tel"
-                inputMode="numeric"
-                maxLength={10}
-                placeholder="10-digit mobile number"
-                value={mobile}
-                onChange={(e) =>
-                  setMobile(e.target.value.replace(/\D/g, "").slice(0, 10))
-                }
-              />
-            </div>
-
-            <div className="form-field">
-              <label className="field-label" htmlFor="designation">
-                Designation <span>*</span>
-              </label>
-
-              <select
-                id="designation"
-                className="form-input"
-                value={designation}
-                onChange={(e) => setDesignation(e.target.value)}
-                required
-              >
-                <option value="">Select Designation</option>
-                <option value="Founder">Founder</option>
-                <option value="Manager">Manager</option>
-                <option value="Team Leader">Team Leader</option>
-                <option value="Assistent Team Leader">
-                  Assistent Team Leader
-                </option>
-                <option value="Senior Accountant">Senior Accountant</option>
-                <option value="Junior Accountant">Junior Accountant</option>
-              </select>
-            </div>
-
-            <div className="form-field">
-              <label className="field-label" htmlFor="department">
-                Department <span>*</span>
-              </label>
-
-              <select
-                id="department"
-                className="form-input"
-                value={department}
-                onChange={(e) => setDepartment(e.target.value)}
-                required
-              >
-                <option value="">Select Department</option>
-                <option value="IT">IT</option>
-                <option value="UK Accounts and Taxation">
-                  UK Accounts and Taxation
-                </option>
-                <option value="Human Resource">Human Resource</option>
-                <option value="Learning and Development">
-                  Learning and Development
-                </option>
-              </select>
-            </div>
-          </div>
-        </div>
-
-        <div className="form-section">
-          <div className="form-section-header">
-            <div>
-              <h3>Employment Information</h3>
-              <p>Set employment dates, type and current status.</p>
-            </div>
-          </div>
-
-          <div className="form-grid">
-            <div className="form-field">
-              <label className="field-label" htmlFor="joiningDate">
-                Joining Date <span>*</span>
-              </label>
-
-              <input
-                id="joiningDate"
-                className="form-input"
-                type="date"
-                value={joiningDate}
-                onChange={(e) => setJoiningDate(e.target.value)}
-                required
-              />
-            </div>
-
-            <div className="form-field">
-              <label className="field-label" htmlFor="dateOfBirth">
-                Date of Birth
-              </label>
-
-              <input
-                id="dateOfBirth"
-                className="form-input"
-                type="date"
-                max={new Date().toISOString().split("T")[0]}
-                value={dateOfBirth}
-                onChange={(e) => setDateOfBirth(e.target.value)}
-              />
-            </div>
-
-            <div className="form-field">
-              <label className="field-label" htmlFor="employmentType">
-                Employment Type
-              </label>
-
-              <select
-                id="employmentType"
-                className="form-input"
-                value={employmentType}
-                onChange={(e) => setEmploymentType(e.target.value)}
-              >
-                <option>Full Time</option>
-                <option>Part Time</option>
-                <option>Intern</option>
-                <option>Contract</option>
-              </select>
-            </div>
-
-            <div className="form-field">
-              <label className="field-label" htmlFor="status">
-                Status
-              </label>
-
-              <select
-                id="status"
-                className="form-input"
-                value={status}
-                onChange={(e) => setStatus(e.target.value)}
-              >
-                <option>Active</option>
-                <option>Inactive</option>
-              </select>
-            </div>
-          </div>
-        </div>
-
-        <div className="form-section">
-          <div className="form-section-header">
-            <div>
-              <h3>Additional Information</h3>
-              <p>Add interests, notes and employee documents.</p>
-            </div>
-          </div>
-
-          <div className="form-grid">
-            <div className="form-field full-width">
-              <label className="field-label" htmlFor="interestAreas">
-                Interest Areas
-              </label>
-
-              <input
-                id="interestAreas"
-                className="form-input"
-                placeholder="React, Node, MongoDB"
-                value={interestAreas}
-                onChange={(e) => setInterestAreas(e.target.value)}
-              />
-
-              <span className="field-help">
-                Separate multiple interests using commas.
-              </span>
-            </div>
-
-            <div className="form-field full-width">
-              <label className="field-label" htmlFor="notes">
-                Employee Notes
-              </label>
-
-              <textarea
-                id="notes"
-                className="form-input notes-box"
-                placeholder="Add any relevant employee notes..."
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-              />
-            </div>
-          </div>
-
-          <div className="documents-section">
-            <div className="documents-header">
-              <div>
-                <h3>Employee Documents</h3>
-                <p>Upload supported PDF, JPG, JPEG or PNG documents.</p>
-              </div>
-            </div>
-
-            <div className="document-grid">
-              <div className="document-field">
-                <label className="field-label">Aadhar Card</label>
-
-                <input
-                  id="aadharCard"
-                  className="file-input"
-                  type="file"
-                  accept=".pdf,.jpg,.jpeg,.png"
-                  onChange={(e) => setAadharCard(e.target.files[0] || null)}
-                />
-
-                <label className="file-upload-box" htmlFor="aadharCard">
-                  <span className="file-upload-icon">↑</span>
-                  <strong>
-                    {aadharCard ? aadharCard.name : "Choose file"}
-                  </strong>
-                  <small>
-                    {aadharCard ? "File selected" : "PDF, JPG, JPEG, PNG"}
-                  </small>
-                </label>
-              </div>
-
-              <div className="document-field">
-                <label className="field-label">PAN Card</label>
-
-                <input
-                  id="panCard"
-                  className="file-input"
-                  type="file"
-                  accept=".pdf,.jpg,.jpeg,.png"
-                  onChange={(e) => setPanCard(e.target.files[0] || null)}
-                />
-
-                <label className="file-upload-box" htmlFor="panCard">
-                  <span className="file-upload-icon">↑</span>
-                  <strong>{panCard ? panCard.name : "Choose file"}</strong>
-                  <small>
-                    {panCard ? "File selected" : "PDF, JPG, JPEG, PNG"}
-                  </small>
-                </label>
-              </div>
-
-              <div className="document-field">
-                <label className="field-label">Payslips</label>
-
-                <input
-                  id="payslips"
-                  className="file-input"
-                  type="file"
-                  multiple
-                  accept=".pdf,.jpg,.jpeg,.png"
-                  onChange={(e) => setPayslips([...e.target.files])}
-                />
-
-                <label className="file-upload-box" htmlFor="payslips">
-                  <span className="file-upload-icon">↑</span>
-                  <strong>
-                    {payslips.length
-                      ? `${payslips.length} file(s) selected`
-                      : "Choose files"}
-                  </strong>
-                  <small>Multiple files allowed</small>
-                </label>
-              </div>
-
-              <div className="document-field">
-                <label className="field-label">Qualifications</label>
-
-                <input
-                  id="qualifications"
-                  className="file-input"
-                  type="file"
-                  multiple
-                  accept=".pdf,.jpg,.jpeg,.png"
-                  onChange={(e) => setQualifications([...e.target.files])}
-                />
-
-                <label className="file-upload-box" htmlFor="qualifications">
-                  <span className="file-upload-icon">↑</span>
-                  <strong>
-                    {qualifications.length
-                      ? `${qualifications.length} file(s) selected`
-                      : "Choose files"}
-                  </strong>
-                  <small>Multiple files allowed</small>
-                </label>
-              </div>
-
-              <div className="document-field">
-                <label className="field-label">Certificates</label>
-
-                <input
-                  id="certificates"
-                  className="file-input"
-                  type="file"
-                  multiple
-                  accept=".pdf,.jpg,.jpeg,.png"
-                  onChange={(e) => setCertificates([...e.target.files])}
-                />
-
-                <label className="file-upload-box" htmlFor="certificates">
-                  <span className="file-upload-icon">↑</span>
-                  <strong>
-                    {certificates.length
-                      ? `${certificates.length} file(s) selected`
-                      : "Choose files"}
-                  </strong>
-                  <small>Multiple files allowed</small>
-                </label>
-              </div>
-
-              <div className="document-field">
-                <label className="field-label">Relieving Letter</label>
-
-                <input
-                  id="relievingLetter"
-                  className="file-input"
-                  type="file"
-                  accept=".pdf,.jpg,.jpeg,.png"
-                  onChange={(e) =>
-                    setRelievingLetter(e.target.files[0] || null)
-                  }
-                />
-
-                <label className="file-upload-box" htmlFor="relievingLetter">
-                  <span className="file-upload-icon">↑</span>
-                  <strong>
-                    {relievingLetter ? relievingLetter.name : "Choose file"}
-                  </strong>
-                  <small>
-                    {relievingLetter ? "File selected" : "PDF, JPG, JPEG, PNG"}
-                  </small>
-                </label>
-              </div>
-
-              <div className="document-field">
-                <label className="field-label">Experience Letter</label>
-
-                <input
-                  id="experienceLetter"
-                  className="file-input"
-                  type="file"
-                  accept=".pdf,.jpg,.jpeg,.png"
-                  onChange={(e) =>
-                    setExperienceLetter(e.target.files[0] || null)
-                  }
-                />
-
-                <label className="file-upload-box" htmlFor="experienceLetter">
-                  <span className="file-upload-icon">↑</span>
-                  <strong>
-                    {experienceLetter ? experienceLetter.name : "Choose file"}
-                  </strong>
-                  <small>
-                    {experienceLetter ? "File selected" : "PDF, JPG, JPEG, PNG"}
-                  </small>
-                </label>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="form-actions">
           <button
             type="button"
-            className="secondary-button"
-            onClick={resetForm}
-            disabled={loading}
+            className="button add-btn"
+            onClick={() => {
+              setFormError("");
+              setFormSuccess("");
+              setShowAddEmployeeModal(true);
+            }}
           >
-            Clear Form
-          </button>
-
-          <button type="submit" className="button add-btn" disabled={loading}>
-            {loading ? (
-              <>
-                <span className="button-spinner"></span>
-                Adding Employee...
-              </>
-            ) : (
-              "Add Employee"
-            )}
+            + Add Employee
           </button>
         </div>
-      </form>
+      </div>
+      {showAddEmployeeModal && (
+        <div
+          className="employee-modal-overlay add-employee-modal-overlay"
+          onClick={closeAddEmployeeModal}
+          role="presentation"
+        >
+          <div
+            className="employee-modal add-employee-modal"
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="add-employee-title"
+          >
+            <div className="add-employee-modal-header">
+              <div>
+                <span className="section-eyebrow">Employee Management</span>
+
+                <h2 id="add-employee-title">Add Employee</h2>
+
+                <p>Create a new employee profile and upload their documents.</p>
+              </div>
+
+              <button
+                type="button"
+                className="close-btn"
+                onClick={closeAddEmployeeModal}
+                aria-label="Close add employee form"
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="add-employee-modal-body">
+              <form
+                className="employee-form"
+                onSubmit={handleAddEmployee}
+                noValidate
+              >
+                {formError && (
+                  <div className="form-alert form-alert-error" role="alert">
+                    <span className="alert-icon">!</span>
+                    <span>{formError}</span>
+                  </div>
+                )}
+
+                {formSuccess && (
+                  <div className="form-alert form-alert-success" role="status">
+                    <span className="alert-icon">✓</span>
+                    <span>{formSuccess}</span>
+                  </div>
+                )}
+
+                <div className="form-section">
+                  <div className="form-section-header">
+                    <div>
+                      <h3>Basic Information</h3>
+                      <p>Enter the employee's personal and contact details.</p>
+                    </div>
+
+                    <span className="required-note">* Required</span>
+                  </div>
+
+                  <div className="form-grid">
+                    <div className="form-field">
+                      <label className="field-label" htmlFor="firstName">
+                        First Name <span>*</span>
+                      </label>
+
+                      <input
+                        id="firstName"
+                        className="form-input"
+                        placeholder="Enter first name"
+                        value={firstName}
+                        onChange={(e) => setFirstName(e.target.value)}
+                        required
+                      />
+                    </div>
+
+                    <div className="form-field">
+                      <label className="field-label" htmlFor="lastName">
+                        Last Name <span>*</span>
+                      </label>
+
+                      <input
+                        id="lastName"
+                        className="form-input"
+                        placeholder="Enter last name"
+                        value={lastName}
+                        onChange={(e) => setLastName(e.target.value)}
+                        required
+                      />
+                    </div>
+
+                    <div className="form-field">
+                      <label className="field-label" htmlFor="email">
+                        Email Address
+                      </label>
+
+                      <input
+                        id="email"
+                        className="form-input"
+                        type="email"
+                        placeholder="employee@example.com"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                      />
+                    </div>
+
+                    <div className="form-field">
+                      <label className="field-label" htmlFor="mobile">
+                        Mobile Number
+                      </label>
+
+                      <input
+                        id="mobile"
+                        className="form-input"
+                        type="tel"
+                        inputMode="numeric"
+                        maxLength={10}
+                        placeholder="10-digit mobile number"
+                        value={mobile}
+                        onChange={(e) =>
+                          setMobile(
+                            e.target.value.replace(/\D/g, "").slice(0, 10),
+                          )
+                        }
+                      />
+                    </div>
+
+                    <div className="form-field">
+                      <label className="field-label" htmlFor="designation">
+                        Designation <span>*</span>
+                      </label>
+
+                      <select
+                        id="designation"
+                        className="form-input"
+                        value={designation}
+                        onChange={(e) => setDesignation(e.target.value)}
+                        required
+                      >
+                        <option value="">Select Designation</option>
+                        <option value="Founder">Founder</option>
+                        <option value="Manager">Manager</option>
+                        <option value="Team Leader">Team Leader</option>
+                        <option value="Assistent Team Leader">
+                          Assistent Team Leader
+                        </option>
+                        <option value="Senior Accountant">
+                          Senior Accountant
+                        </option>
+                        <option value="Junior Accountant">
+                          Junior Accountant
+                        </option>
+                      </select>
+                    </div>
+
+                    <div className="form-field">
+                      <label className="field-label" htmlFor="department">
+                        Department <span>*</span>
+                      </label>
+
+                      <select
+                        id="department"
+                        className="form-input"
+                        value={department}
+                        onChange={(e) => setDepartment(e.target.value)}
+                        required
+                      >
+                        <option value="">Select Department</option>
+                        <option value="IT">IT</option>
+                        <option value="UK Accounts and Taxation">
+                          UK Accounts and Taxation
+                        </option>
+                        <option value="Human Resource">Human Resource</option>
+                        <option value="Learning and Development">
+                          Learning and Development
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="form-section">
+                  <div className="form-section-header">
+                    <div>
+                      <h3>Employment Information</h3>
+                      <p>Set employment dates, type and current status.</p>
+                    </div>
+                  </div>
+
+                  <div className="form-grid">
+                    <div className="form-field">
+                      <label className="field-label" htmlFor="joiningDate">
+                        Joining Date <span>*</span>
+                      </label>
+
+                      <input
+                        id="joiningDate"
+                        className="form-input"
+                        type="date"
+                        value={joiningDate}
+                        onChange={(e) => setJoiningDate(e.target.value)}
+                        required
+                      />
+                    </div>
+
+                    <div className="form-field">
+                      <label className="field-label" htmlFor="dateOfBirth">
+                        Date of Birth
+                      </label>
+
+                      <input
+                        id="dateOfBirth"
+                        className="form-input"
+                        type="date"
+                        max={new Date().toISOString().split("T")[0]}
+                        value={dateOfBirth}
+                        onChange={(e) => setDateOfBirth(e.target.value)}
+                      />
+                    </div>
+
+                    <div className="form-field">
+                      <label className="field-label" htmlFor="employmentType">
+                        Employment Type
+                      </label>
+
+                      <select
+                        id="employmentType"
+                        className="form-input"
+                        value={employmentType}
+                        onChange={(e) => setEmploymentType(e.target.value)}
+                      >
+                        <option>Full Time</option>
+                        <option>Part Time</option>
+                        {/* <option>Intern</option> */}
+                        <option>Contract</option>
+                      </select>
+                    </div>
+
+                    <div className="form-field">
+                      <label className="field-label" htmlFor="status">
+                        Status
+                      </label>
+
+                      <select
+                        id="status"
+                        className="form-input"
+                        value={status}
+                        onChange={(e) => setStatus(e.target.value)}
+                      >
+                        <option>Active</option>
+                        <option>Inactive</option>
+                        <option>Resigned</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="form-section">
+                  <div className="form-section-header">
+                    <div>
+                      <h3>Additional Information</h3>
+                      <p>Add interests, notes and employee documents.</p>
+                    </div>
+                  </div>
+
+                  <div className="form-grid">
+                    <div className="form-field full-width">
+                      <label className="field-label" htmlFor="interestAreas">
+                        Interest Areas
+                      </label>
+
+                      <input
+                        id="interestAreas"
+                        className="form-input"
+                        placeholder="React, Node, MongoDB"
+                        value={interestAreas}
+                        onChange={(e) => setInterestAreas(e.target.value)}
+                      />
+
+                      <span className="field-help">
+                        Separate multiple interests using commas.
+                      </span>
+                    </div>
+
+                    <div className="form-field full-width">
+                      <label className="field-label" htmlFor="notes">
+                        Employee Notes
+                      </label>
+
+                      <textarea
+                        id="notes"
+                        className="form-input notes-box"
+                        placeholder="Add any relevant employee notes..."
+                        value={notes}
+                        onChange={(e) => setNotes(e.target.value)}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="documents-section">
+                    <div className="documents-header">
+                      <div>
+                        <h3>Employee Documents</h3>
+                        <p>Upload supported PDF, JPG, JPEG or PNG documents.</p>
+                      </div>
+                    </div>
+
+                    <div className="document-grid">
+                      <div className="document-field">
+                        <label className="field-label">Aadhar Card</label>
+
+                        <input
+                          id="aadharCard"
+                          className="file-input"
+                          type="file"
+                          accept=".pdf,.jpg,.jpeg,.png"
+                          onChange={(e) =>
+                            setAadharCard(e.target.files[0] || null)
+                          }
+                        />
+
+                        <label className="file-upload-box" htmlFor="aadharCard">
+                          <span className="file-upload-icon">↑</span>
+                          <strong>
+                            {aadharCard ? aadharCard.name : "Choose file"}
+                          </strong>
+                          <small>
+                            {aadharCard
+                              ? "File selected"
+                              : "PDF, JPG, JPEG, PNG"}
+                          </small>
+                        </label>
+                      </div>
+
+                      <div className="document-field">
+                        <label className="field-label">PAN Card</label>
+
+                        <input
+                          id="panCard"
+                          className="file-input"
+                          type="file"
+                          accept=".pdf,.jpg,.jpeg,.png"
+                          onChange={(e) =>
+                            setPanCard(e.target.files[0] || null)
+                          }
+                        />
+
+                        <label className="file-upload-box" htmlFor="panCard">
+                          <span className="file-upload-icon">↑</span>
+                          <strong>
+                            {panCard ? panCard.name : "Choose file"}
+                          </strong>
+                          <small>
+                            {panCard ? "File selected" : "PDF, JPG, JPEG, PNG"}
+                          </small>
+                        </label>
+                      </div>
+
+                      <div className="document-field">
+                        <label className="field-label">Payslips</label>
+
+                        <input
+                          id="payslips"
+                          className="file-input"
+                          type="file"
+                          multiple
+                          accept=".pdf,.jpg,.jpeg,.png"
+                          onChange={(e) => setPayslips([...e.target.files])}
+                        />
+
+                        <label className="file-upload-box" htmlFor="payslips">
+                          <span className="file-upload-icon">↑</span>
+                          <strong>
+                            {payslips.length
+                              ? `${payslips.length} file(s) selected`
+                              : "Choose files"}
+                          </strong>
+                          <small>Multiple files allowed</small>
+                        </label>
+                      </div>
+
+                      <div className="document-field">
+                        <label className="field-label">Qualifications</label>
+
+                        <input
+                          id="qualifications"
+                          className="file-input"
+                          type="file"
+                          multiple
+                          accept=".pdf,.jpg,.jpeg,.png"
+                          onChange={(e) =>
+                            setQualifications([...e.target.files])
+                          }
+                        />
+
+                        <label
+                          className="file-upload-box"
+                          htmlFor="qualifications"
+                        >
+                          <span className="file-upload-icon">↑</span>
+                          <strong>
+                            {qualifications.length
+                              ? `${qualifications.length} file(s) selected`
+                              : "Choose files"}
+                          </strong>
+                          <small>Multiple files allowed</small>
+                        </label>
+                      </div>
+
+                      <div className="document-field">
+                        <label className="field-label">Certificates</label>
+
+                        <input
+                          id="certificates"
+                          className="file-input"
+                          type="file"
+                          multiple
+                          accept=".pdf,.jpg,.jpeg,.png"
+                          onChange={(e) => setCertificates([...e.target.files])}
+                        />
+
+                        <label
+                          className="file-upload-box"
+                          htmlFor="certificates"
+                        >
+                          <span className="file-upload-icon">↑</span>
+                          <strong>
+                            {certificates.length
+                              ? `${certificates.length} file(s) selected`
+                              : "Choose files"}
+                          </strong>
+                          <small>Multiple files allowed</small>
+                        </label>
+                      </div>
+
+                      <div className="document-field">
+                        <label className="field-label">Relieving Letter</label>
+
+                        <input
+                          id="relievingLetter"
+                          className="file-input"
+                          type="file"
+                          accept=".pdf,.jpg,.jpeg,.png"
+                          onChange={(e) =>
+                            setRelievingLetter(e.target.files[0] || null)
+                          }
+                        />
+
+                        <label
+                          className="file-upload-box"
+                          htmlFor="relievingLetter"
+                        >
+                          <span className="file-upload-icon">↑</span>
+                          <strong>
+                            {relievingLetter
+                              ? relievingLetter.name
+                              : "Choose file"}
+                          </strong>
+                          <small>
+                            {relievingLetter
+                              ? "File selected"
+                              : "PDF, JPG, JPEG, PNG"}
+                          </small>
+                        </label>
+                      </div>
+
+                      <div className="document-field">
+                        <label className="field-label">Experience Letter</label>
+
+                        <input
+                          id="experienceLetter"
+                          className="file-input"
+                          type="file"
+                          accept=".pdf,.jpg,.jpeg,.png"
+                          onChange={(e) =>
+                            setExperienceLetter(e.target.files[0] || null)
+                          }
+                        />
+
+                        <label
+                          className="file-upload-box"
+                          htmlFor="experienceLetter"
+                        >
+                          <span className="file-upload-icon">↑</span>
+                          <strong>
+                            {experienceLetter
+                              ? experienceLetter.name
+                              : "Choose file"}
+                          </strong>
+                          <small>
+                            {experienceLetter
+                              ? "File selected"
+                              : "PDF, JPG, JPEG, PNG"}
+                          </small>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="form-actions">
+                  <button
+                    type="button"
+                    className="secondary-button"
+                    onClick={resetForm}
+                    disabled={loading}
+                  >
+                    Clear Form
+                  </button>
+
+                  <button
+                    type="button"
+                    className="secondary-button"
+                    onClick={closeAddEmployeeModal}
+                    disabled={loading}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="button add-btn"
+                    disabled={loading}
+                  >
+                    {loading ? (
+                      <>
+                        <span className="button-spinner"></span>
+                        Adding Employee...
+                      </>
+                    ) : (
+                      "Add Employee"
+                    )}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
 
       <section className="organisation-section">
         <div className="employees-header">
@@ -1095,7 +1238,9 @@ function EmployeeManagement() {
         {filteredEmployees.length === 0 ? (
           <div className="empty-state">
             <div className="empty-icon">⌕</div>
+
             <h3>No employees found</h3>
+
             <p>
               {searchTerm
                 ? "Try a different search term."
@@ -1103,49 +1248,88 @@ function EmployeeManagement() {
             </p>
           </div>
         ) : (
-          <div className="employees-grid">
-            {filteredEmployees.map((employee) => (
-              <button
-                type="button"
-                className="employee-card"
-                key={employee._id}
-                onClick={() => openEmployee(employee)}
-              >
-                <div className="employee-card-top">
-                  <div className="employee-avatar">
-                    {getEmployeeInitials(employee)}
-                  </div>
+          <div className="employees-table-wrapper">
+            <table className="employees-table">
+              <thead>
+                <tr>
+                  <th>EMP CODE</th>
+                  <th>EMP ROLE</th>
+                  <th>DEPARTMENT</th>
+                  <th>EMAIL</th>
+                  <th>MOBILE</th>
+                  <th>STATUS</th>
+                  <th>ACTION</th>
+                </tr>
+              </thead>
 
-                  <span
-                    className={`status-badge ${
-                      employee.status === "Active"
-                        ? "active-status"
-                        : "inactive-status"
-                    }`}
-                  >
-                    {employee.status}
-                  </span>
-                </div>
+              <tbody>
+                {filteredEmployees.map((employee) => (
+                  <tr key={employee._id}>
+                    <td>
+                      <strong>{employee.employeeCode || "-"}</strong>
+                    </td>
 
-                <div className="employee-card-body">
-                  <h3 className="employee-name">
-                    {employee.firstName} {employee.lastName}
-                  </h3>
+                    <td>
+                      {employee.role || employee.designation || "Employee"}
+                    </td>
 
-                  <p className="employee-designation">
-                    {employee.designation || "Designation not set"}
-                  </p>
+                    <td>{employee.department || "-"}</td>
 
-                  <span className="employee-code">{employee.employeeCode}</span>
-                </div>
+                    <td>{employee.email || "-"}</td>
 
-                <div className="employee-footer">
-                  <span>{employee.department || "No department"}</span>
+                    <td>{employee.mobile || "-"}</td>
 
-                  <span className="view-profile">View Profile →</span>
-                </div>
-              </button>
-            ))}
+                    <td>
+                      <span
+                        className={`status-badge ${
+                          employee.status === "Active"
+                            ? "active-status"
+                            : employee.status === "Resigned"
+                              ? "resigned-status"
+                              : "inactive-status"
+                        }`}
+                      >
+                        {employee.status || "Inactive"}
+                      </span>
+                    </td>
+
+                    <td>
+                      <button
+                        type="button"
+                        className="employee-view-button"
+                        onClick={() => openEmployee(employee)}
+                        aria-label={`View ${employee.firstName} ${employee.lastName}`}
+                        title="View Profile"
+                      >
+                        <svg
+                          viewBox="0 0 24 24"
+                          aria-hidden="true"
+                          className="employee-view-icon"
+                        >
+                          <path
+                            d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="1.8"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+
+                          <circle
+                            cx="12"
+                            cy="12"
+                            r="2.8"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="1.8"
+                          />
+                        </svg>
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         )}
       </section>
@@ -1192,9 +1376,11 @@ function EmployeeManagement() {
 
                 <span
                   className={`status-badge ${
-                    selectedEmployee.status === "Active"
+                    selectedEmployee?.status === "Active"
                       ? "active-status"
-                      : "inactive-status"
+                      : selectedEmployee?.status === "Resigned"
+                        ? "resigned-status"
+                        : "inactive-status"
                   }`}
                 >
                   {selectedEmployee.status}
@@ -1245,6 +1431,24 @@ function EmployeeManagement() {
                 <span>{selectedEmployee.role || "Employee"}</span>
               </div>
             </div>
+
+            {selectedEmployee.status !== "Resigned" && (
+              <div className="profile-section">
+                <div className="profile-section-heading">
+                  <h4>Employee Status</h4>
+                </div>
+
+                <div className="profile-actions">
+                  <button
+                    type="button"
+                    className="resign-button"
+                    onClick={handleResignEmployee}
+                  >
+                    Mark as Resigned
+                  </button>
+                </div>
+              </div>
+            )}
 
             <div className="profile-section">
               <div className="profile-section-heading">

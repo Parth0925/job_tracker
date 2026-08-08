@@ -20,6 +20,10 @@ const menus = [
     icon: LayoutDashboard,
   },
   {
+    title: "Employee Dashboard",
+    icon: LayoutDashboard,
+  },
+  {
     title: "Employees",
     icon: Users,
   },
@@ -62,11 +66,11 @@ function Sidebar({ active, setActive }) {
 
   return (
     <aside className="sidebar">
-      <div className="sidebar-logo">
+      <div className="sidebar-brand">
         <div className="brand-mark">CRM</div>
 
         <div className="brand-info">
-          <h2>CRM</h2>
+          {/* <h2>CRM</h2> */}
           <span>Workforce Management</span>
         </div>
       </div>
@@ -107,8 +111,8 @@ function Sidebar({ active, setActive }) {
       <div className="sidebar-footer">
         <div className="sidebar-footer-line"></div>
 
-        <span>CRM</span>
-        <small>Workforce Management</small>
+        {/* <span>CRM</span> */}
+        {/* <small>Workforce Management</small> */}
       </div>
     </aside>
   );

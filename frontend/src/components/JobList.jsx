@@ -44,6 +44,7 @@ function JobList() {
 
   const [selectedJob, setSelectedJob] = useState(null);
   const [showJobModal, setShowJobModal] = useState(false);
+  const [showCreateJobModal, setShowCreateJobModal] = useState(false);
 
   useEffect(() => {
     fetchJobs();
@@ -250,6 +251,7 @@ function JobList() {
       setStatus("Not Started");
 
       await fetchJobs();
+      setShowCreateJobModal(false);
     } catch (error) {
       console.log("Create job error:", error);
 
@@ -367,6 +369,14 @@ function JobList() {
             Create, monitor and manage all client jobs.
           </p>
         </div>
+
+        <button
+          type="button"
+          className="button create-job-header-button"
+          onClick={() => setShowCreateJobModal(true)}
+        >
+          + Create Job
+        </button>
       </div>
 
       {/* =========================
@@ -426,420 +436,450 @@ function JobList() {
       </div>
 
       {/* =========================
-          CREATE JOB
-      ========================== */}
+    CREATE JOB MODAL
+========================== */}
 
-      <div className="job-section-header">
-        <div>
-          <h2 className="section-title">Create New Job</h2>
+      {showCreateJobModal && (
+        <div
+          className="job-modal-overlay"
+          onClick={() => setShowCreateJobModal(false)}
+        >
+          <div
+            className="job-modal create-job-modal"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="modal-header">
+              <div>
+                <div className="modal-eyebrow">CREATE JOB</div>
 
-          <p className="section-subtitle">
-            Enter job information and assign employees.
-          </p>
-        </div>
-      </div>
+                <h2>Create New Job</h2>
 
-      <form className="job-form" onSubmit={handleCreateJob}>
-        <div className="form-section">
-          <div className="form-section-title">
-            <span>01</span>
-            Job Information
-          </div>
+                <p>Enter job information and assign employees.</p>
+              </div>
 
-          <div className="form-grid">
-            <div className="form-field">
-              <label>
-                Client Name
-                <span>*</span>
-              </label>
-
-              <input
-                className="form-input"
-                placeholder="Enter client name"
-                value={clientName}
-                onChange={(e) => setClientName(e.target.value)}
-              />
-            </div>
-
-            <div className="form-field">
-              <label>
-                Project Name
-                <span>*</span>
-              </label>
-
-              <input
-                className="form-input"
-                placeholder="Enter project name"
-                value={projectName}
-                onChange={(e) => setProjectName(e.target.value)}
-              />
-            </div>
-
-            <div className="form-field">
-              <label>
-                Job Name
-                <span>*</span>
-              </label>
-
-              <input
-                className="form-input"
-                placeholder="Enter job name"
-                value={jobName}
-                onChange={(e) => setJobName(e.target.value)}
-              />
-            </div>
-
-            <div className="form-field">
-              <label>
-                Budgeted Hours
-                <span>*</span>
-              </label>
-
-              <input
-                className="form-input"
-                type="number"
-                min="0"
-                step="0.5"
-                placeholder="e.g. 8"
-                value={budgetedHours}
-                onChange={(e) => setBudgetedHours(e.target.value)}
-              />
-            </div>
-          </div>
-
-          <div className="form-field form-field-full">
-            <label>Job Description</label>
-
-            <textarea
-              className="form-textarea"
-              placeholder="Describe the job, requirements or special instructions..."
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-            />
-          </div>
-        </div>
-
-        <div className="form-section">
-          <div className="form-section-title">
-            <span>02</span>
-            Job Settings
-          </div>
-
-          <div className="form-grid">
-            <div className="form-field">
-              <label>Job Type</label>
-
-              <select
-                className="form-input"
-                value={jobType}
-                onChange={(e) => setJobType(e.target.value)}
-              >
-                <option value="Billable">Billable</option>
-
-                <option value="Non Billable">Non Billable</option>
-              </select>
-            </div>
-
-            <div className="form-field">
-              <label>Priority</label>
-
-              <select
-                className="form-input"
-                value={priority}
-                onChange={(e) => setPriority(e.target.value)}
-              >
-                <option>Low</option>
-                <option>Medium</option>
-                <option>High</option>
-              </select>
-            </div>
-
-            <div className="form-field">
-              <label>Status</label>
-
-              <select
-                className="form-input"
-                value={status}
-                onChange={(e) => setStatus(e.target.value)}
-              >
-                <option>Awaiting Info</option>
-                <option>Not Started</option>
-                <option>In Review</option>
-                <option>Completed</option>
-              </select>
-            </div>
-
-            <div className="form-field">
-              <label>Checklist Prepared</label>
-
-              <select
-                className="form-input"
-                value={checklistPrepared}
-                onChange={(e) =>
-                  setChecklistPrepared(e.target.value === "true")
-                }
-              >
-                <option value="false">No</option>
-                <option value="true">Yes</option>
-              </select>
-            </div>
-          </div>
-        </div>
-
-        <div className="form-section">
-          <div className="form-section-title">
-            <span>03</span>
-            Recurring Job
-          </div>
-
-          <div className="form-grid">
-            <div className="form-field">
-              <label>Repeat Job</label>
-
-              <select
-                className="form-input"
-                value={repeatJob}
-                onChange={(e) => setRepeatJob(e.target.value === "true")}
-              >
-                <option value="false">No</option>
-                <option value="true">Yes</option>
-              </select>
-            </div>
-
-            {repeatJob && (
-              <>
-                <div className="form-field">
-                  <label>Repeat Frequency</label>
-
-                  <select
-                    className="form-input"
-                    value={repeatFrequency}
-                    onChange={(e) => setRepeatFrequency(e.target.value)}
-                  >
-                    <option value="Weekly">Weekly</option>
-
-                    <option value="Monthly">Monthly</option>
-
-                    <option value="Yearly">Yearly</option>
-                  </select>
-                </div>
-
-                <div className="form-field">
-                  <label>Next Due Date</label>
-
-                  <input
-                    className="form-input"
-                    type="date"
-                    value={nextDueDate}
-                    onChange={(e) => setNextDueDate(e.target.value)}
-                  />
-                </div>
-              </>
-            )}
-          </div>
-        </div>
-
-        <div className="form-section">
-          <div className="form-section-title">
-            <span>04</span>
-            Employee Assignment
-          </div>
-
-          <div className="assignment-builder">
-            <div className="form-field">
-              <label>Employee</label>
-
-              <select
-                className="form-input"
-                value={selectedEmployeeId}
-                onChange={(e) => setSelectedEmployeeId(e.target.value)}
-              >
-                <option value="">Select Employee</option>
-
-                {employees.map((employee) => (
-                  <option key={employee._id} value={employee._id}>
-                    {employee.firstName} {employee.lastName}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="form-field">
-              <label>Role</label>
-
-              <select
-                className="form-input"
-                value={selectedRole}
-                onChange={(e) => setSelectedRole(e.target.value)}
-              >
-                <option>Preparer</option>
-                <option>Reviewer</option>
-              </select>
-            </div>
-
-            <div className="form-field">
-              <label>Allocated Hours</label>
-
-              <input
-                className="form-input"
-                type="number"
-                min="0"
-                step="0.5"
-                placeholder="Hours"
-                value={allocatedHours}
-                onChange={(e) => setAllocatedHours(e.target.value)}
-              />
-            </div>
-
-            <div className="assignment-add-wrapper">
               <button
                 type="button"
-                className="button secondary-button"
-                onClick={addAssignment}
+                className="close-btn"
+                onClick={() => setShowCreateJobModal(false)}
               >
-                + Add
+                ✕
               </button>
             </div>
-          </div>
 
-          <div className="allocation-summary">
-            <div>
-              <span>Budgeted</span>
-              <strong>{budgetHoursNumber || 0} hrs</strong>
-            </div>
+            <form className="job-form" onSubmit={handleCreateJob}>
+              <div className="form-section">
+                <div className="form-section-title">
+                  <span>01</span>
+                  Job Information
+                </div>
 
-            <div>
-              <span>Allocated</span>
-              <strong>{totalAllocatedHours} hrs</strong>
-            </div>
+                <div className="form-grid">
+                  <div className="form-field">
+                    <label>
+                      Client Name
+                      <span>*</span>
+                    </label>
 
-            <div
-              className={
-                remainingAllocation === 0
-                  ? "allocation-good"
-                  : remainingAllocation < 0
-                    ? "allocation-danger"
-                    : "allocation-warning"
-              }
-            >
-              <span>
-                {remainingAllocation === 0
-                  ? "Allocation Complete"
-                  : remainingAllocation < 0
-                    ? "Over Allocated"
-                    : "Remaining"}
-              </span>
+                    <input
+                      className="form-input"
+                      placeholder="Enter client name"
+                      value={clientName}
+                      onChange={(e) => setClientName(e.target.value)}
+                    />
+                  </div>
 
-              <strong>{Math.abs(remainingAllocation)} hrs</strong>
-            </div>
-          </div>
+                  <div className="form-field">
+                    <label>
+                      Project Name
+                      <span>*</span>
+                    </label>
 
-          {assignments.length > 0 && (
-            <div className="assignment-table-wrapper">
-              <table className="assignment-table">
-                <thead>
-                  <tr>
-                    <th>Employee</th>
-                    <th>Role</th>
-                    <th>Allocated Hours</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
+                    <input
+                      className="form-input"
+                      placeholder="Enter project name"
+                      value={projectName}
+                      onChange={(e) => setProjectName(e.target.value)}
+                    />
+                  </div>
 
-                <tbody>
-                  {assignments.map((assignment, index) => (
-                    <tr key={index}>
-                      <td>
-                        <div className="assignment-employee">
-                          <div className="employee-avatar">
-                            {assignment.employeeName?.charAt(0)?.toUpperCase()}
-                          </div>
+                  <div className="form-field">
+                    <label>
+                      Job Name
+                      <span>*</span>
+                    </label>
 
-                          <span>{assignment.employeeName}</span>
-                        </div>
-                      </td>
+                    <input
+                      className="form-input"
+                      placeholder="Enter job name"
+                      value={jobName}
+                      onChange={(e) => setJobName(e.target.value)}
+                    />
+                  </div>
 
-                      <td>
-                        <span className="role-badge">{assignment.role}</span>
-                      </td>
+                  <div className="form-field">
+                    <label>
+                      Budgeted Hours
+                      <span>*</span>
+                    </label>
 
-                      <td>
-                        <strong>{assignment.allocatedHours} hrs</strong>
-                      </td>
+                    <input
+                      className="form-input"
+                      type="number"
+                      min="0"
+                      step="0.5"
+                      placeholder="e.g. 8"
+                      value={budgetedHours}
+                      onChange={(e) => setBudgetedHours(e.target.value)}
+                    />
+                  </div>
+                </div>
 
-                      <td>
-                        <button
-                          type="button"
-                          className="remove-assignment"
-                          onClick={() =>
-                            setAssignments(
-                              assignments.filter((_, i) => i !== index),
-                            )
-                          }
+                <div className="form-field form-field-full">
+                  <label>Job Description</label>
+
+                  <textarea
+                    className="form-textarea"
+                    placeholder="Describe the job, requirements or special instructions..."
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <div className="form-section">
+                <div className="form-section-title">
+                  <span>02</span>
+                  Job Settings
+                </div>
+
+                <div className="form-grid">
+                  <div className="form-field">
+                    <label>Job Type</label>
+
+                    <select
+                      className="form-input"
+                      value={jobType}
+                      onChange={(e) => setJobType(e.target.value)}
+                    >
+                      <option value="Billable">Billable</option>
+                      <option value="Non Billable">Non Billable</option>
+                    </select>
+                  </div>
+
+                  <div className="form-field">
+                    <label>Priority</label>
+
+                    <select
+                      className="form-input"
+                      value={priority}
+                      onChange={(e) => setPriority(e.target.value)}
+                    >
+                      <option>Low</option>
+                      <option>Medium</option>
+                      <option>High</option>
+                    </select>
+                  </div>
+
+                  <div className="form-field">
+                    <label>Status</label>
+
+                    <select
+                      className="form-input"
+                      value={status}
+                      onChange={(e) => setStatus(e.target.value)}
+                    >
+                      <option>Awaiting Info</option>
+                      <option>Not Started</option>
+                      <option>In Review</option>
+                      <option>Completed</option>
+                    </select>
+                  </div>
+
+                  <div className="form-field">
+                    <label>Checklist Prepared</label>
+
+                    <select
+                      className="form-input"
+                      value={checklistPrepared}
+                      onChange={(e) =>
+                        setChecklistPrepared(e.target.value === "true")
+                      }
+                    >
+                      <option value="false">No</option>
+                      <option value="true">Yes</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div className="form-section">
+                <div className="form-section-title">
+                  <span>03</span>
+                  Recurring Job
+                </div>
+
+                <div className="form-grid">
+                  <div className="form-field">
+                    <label>Repeat Job</label>
+
+                    <select
+                      className="form-input"
+                      value={repeatJob}
+                      onChange={(e) => setRepeatJob(e.target.value === "true")}
+                    >
+                      <option value="false">No</option>
+                      <option value="true">Yes</option>
+                    </select>
+                  </div>
+
+                  {repeatJob && (
+                    <>
+                      <div className="form-field">
+                        <label>Repeat Frequency</label>
+
+                        <select
+                          className="form-input"
+                          value={repeatFrequency}
+                          onChange={(e) => setRepeatFrequency(e.target.value)}
                         >
-                          Remove
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
+                          <option value="Weekly">Weekly</option>
+                          <option value="Monthly">Monthly</option>
+                          <option value="Quarterly">Quarterly</option>
+                          <option value="Yearly">Yearly</option>
+                        </select>
+                      </div>
 
-        <div className="form-section">
-          <div className="form-section-title">
-            <span>05</span>
-            Dates & Communication
+                      <div className="form-field">
+                        <label>Next Due Date</label>
+
+                        <input
+                          className="form-input"
+                          type="date"
+                          value={nextDueDate}
+                          onChange={(e) => setNextDueDate(e.target.value)}
+                        />
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+
+              <div className="form-section">
+                <div className="form-section-title">
+                  <span>04</span>
+                  Employee Assignment
+                </div>
+
+                <div className="assignment-builder">
+                  <div className="form-field">
+                    <label>Employee</label>
+
+                    <select
+                      className="form-input"
+                      value={selectedEmployeeId}
+                      onChange={(e) => setSelectedEmployeeId(e.target.value)}
+                    >
+                      <option value="">Select Employee</option>
+
+                      {employees.map((employee) => (
+                        <option key={employee._id} value={employee._id}>
+                          {employee.firstName} {employee.lastName}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="form-field">
+                    <label>Role</label>
+
+                    <select
+                      className="form-input"
+                      value={selectedRole}
+                      onChange={(e) => setSelectedRole(e.target.value)}
+                    >
+                      <option>Preparer</option>
+                      <option>Reviewer</option>
+                    </select>
+                  </div>
+
+                  <div className="form-field">
+                    <label>Allocated Hours</label>
+
+                    <input
+                      className="form-input"
+                      type="number"
+                      min="0"
+                      step="0.5"
+                      placeholder="Hours"
+                      value={allocatedHours}
+                      onChange={(e) => setAllocatedHours(e.target.value)}
+                    />
+                  </div>
+
+                  <div className="assignment-add-wrapper">
+                    <button
+                      type="button"
+                      className="button secondary-button"
+                      onClick={addAssignment}
+                    >
+                      + Add
+                    </button>
+                  </div>
+                </div>
+
+                <div className="allocation-summary">
+                  <div>
+                    <span>Budgeted</span>
+                    <strong>{budgetHoursNumber || 0} hrs</strong>
+                  </div>
+
+                  <div>
+                    <span>Allocated</span>
+                    <strong>{totalAllocatedHours} hrs</strong>
+                  </div>
+
+                  <div
+                    className={
+                      remainingAllocation === 0
+                        ? "allocation-good"
+                        : remainingAllocation < 0
+                          ? "allocation-danger"
+                          : "allocation-warning"
+                    }
+                  >
+                    <span>
+                      {remainingAllocation === 0
+                        ? "Allocation Complete"
+                        : remainingAllocation < 0
+                          ? "Over Allocated"
+                          : "Remaining"}
+                    </span>
+
+                    <strong>{Math.abs(remainingAllocation)} hrs</strong>
+                  </div>
+                </div>
+
+                {assignments.length > 0 && (
+                  <div className="assignment-table-wrapper">
+                    <table className="assignment-table">
+                      <thead>
+                        <tr>
+                          <th>Employee</th>
+                          <th>Role</th>
+                          <th>Allocated Hours</th>
+                          <th>Action</th>
+                        </tr>
+                      </thead>
+
+                      <tbody>
+                        {assignments.map((assignment, index) => (
+                          <tr key={index}>
+                            <td>
+                              <div className="assignment-employee">
+                                <div className="employee-avatar">
+                                  {assignment.employeeName
+                                    ?.charAt(0)
+                                    ?.toUpperCase()}
+                                </div>
+
+                                <span>{assignment.employeeName}</span>
+                              </div>
+                            </td>
+
+                            <td>
+                              <span className="role-badge">
+                                {assignment.role}
+                              </span>
+                            </td>
+
+                            <td>
+                              <strong>{assignment.allocatedHours} hrs</strong>
+                            </td>
+
+                            <td>
+                              <button
+                                type="button"
+                                className="remove-assignment"
+                                onClick={() =>
+                                  setAssignments(
+                                    assignments.filter((_, i) => i !== index),
+                                  )
+                                }
+                              >
+                                Remove
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+
+              <div className="form-section">
+                <div className="form-section-title">
+                  <span>05</span>
+                  Dates & Communication
+                </div>
+
+                <div className="form-grid">
+                  <div className="form-field">
+                    <label>Assignment Date</label>
+
+                    <input
+                      className="form-input"
+                      type="date"
+                      value={assignmentDate}
+                      onChange={(e) => setAssignmentDate(e.target.value)}
+                    />
+                  </div>
+
+                  <div className="form-field">
+                    <label>Completion Date</label>
+
+                    <input
+                      className="form-input"
+                      type="date"
+                      value={completionDate}
+                      onChange={(e) => setCompletionDate(e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <div className="form-field form-field-full">
+                  <label>Communication Log</label>
+
+                  <textarea
+                    className="form-textarea"
+                    placeholder="Add communication notes..."
+                    value={communicationLog}
+                    onChange={(e) => setCommunicationLog(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <div className="form-actions">
+                <button
+                  type="button"
+                  className="button secondary-button"
+                  onClick={() => setShowCreateJobModal(false)}
+                >
+                  Cancel
+                </button>
+
+                <button
+                  className="button create-job-button"
+                  type="submit"
+                  disabled={loading}
+                >
+                  {loading ? "Creating Job..." : "Create Job"}
+                </button>
+              </div>
+            </form>
           </div>
-
-          <div className="form-grid">
-            <div className="form-field">
-              <label>Assignment Date</label>
-
-              <input
-                className="form-input"
-                type="date"
-                value={assignmentDate}
-                onChange={(e) => setAssignmentDate(e.target.value)}
-              />
-            </div>
-
-            <div className="form-field">
-              <label>Completion Date</label>
-
-              <input
-                className="form-input"
-                type="date"
-                value={completionDate}
-                onChange={(e) => setCompletionDate(e.target.value)}
-              />
-            </div>
-          </div>
-
-          <div className="form-field form-field-full">
-            <label>Communication Log</label>
-
-            <textarea
-              className="form-textarea"
-              placeholder="Add communication notes..."
-              value={communicationLog}
-              onChange={(e) => setCommunicationLog(e.target.value)}
-            />
-          </div>
         </div>
-
-        <div className="form-actions">
-          <button
-            className="button create-job-button"
-            type="submit"
-            disabled={loading}
-          >
-            {loading ? "Creating Job..." : "Create Job"}
-          </button>
-        </div>
-      </form>
+      )}
 
       {/* =========================
           ALL JOBS

@@ -13,6 +13,7 @@ function Configurations() {
   const [employees, setEmployees] = useState([]);
   const [selectedPermissionRole, setSelectedPermissionRole] = useState("");
   const [pagePermissions, setPagePermissions] = useState([]);
+  const [messagePermission, setMessagePermission] = useState("Individual");
   const [loadingRoles, setLoadingRoles] = useState(false);
 
   const [showRoleModal, setShowRoleModal] = useState(false);
@@ -75,6 +76,7 @@ function Configurations() {
       const response = await api.get(`/roles/${roleId}/permissions`);
 
       setPagePermissions(response.data.pagePermissions || []);
+      setMessagePermission(response.data.messagePermission || "Individual");
     } catch (error) {
       console.log("Permission fetch error:", error);
 
@@ -88,6 +90,10 @@ function Configurations() {
     } else {
       setPagePermissions((prev) => [...prev, page]);
     }
+  };
+
+  const handleMessagePermissionChange = (permission) => {
+    setMessagePermission(permission);
   };
 
   const fetchEmployees = async () => {
@@ -344,6 +350,7 @@ function Configurations() {
                       `/roles/${selectedPermissionRole}/permissions`,
                       {
                         pagePermissions,
+                        messagePermission,
                       },
                     );
 
@@ -391,6 +398,36 @@ function Configurations() {
                       />
                     </label>
                   ))}
+
+                  {pagePermissions.includes("Messages") && (
+                    <div className="message-permission-options">
+                      <div className="message-permission-title">
+                        <span>Messages Access</span>
+                      </div>
+
+                      <label className="permission-item">
+                        <span>View All</span>
+
+                        <input
+                          type="checkbox"
+                          checked={messagePermission === "All"}
+                          onChange={() => handleMessagePermissionChange("All")}
+                        />
+                      </label>
+
+                      <label className="permission-item">
+                        <span>View Individual</span>
+
+                        <input
+                          type="checkbox"
+                          checked={messagePermission === "Individual"}
+                          onChange={() =>
+                            handleMessagePermissionChange("Individual")
+                          }
+                        />
+                      </label>
+                    </div>
+                  )}
                 </div>
               </>
             )}

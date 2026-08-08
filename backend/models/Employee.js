@@ -99,12 +99,13 @@ const employeeSchema = new mongoose.Schema(
 
     employmentType: {
       type: String,
+      enum: ["Full Time", "Part Time", "Contract"],
       default: "Full Time",
     },
 
     status: {
       type: String,
-      enum: ["Active", "Inactive"],
+      enum: ["Active", "Inactive", "Resigned"],
       default: "Active",
     },
 

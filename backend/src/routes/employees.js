@@ -296,4 +296,45 @@ router.patch("/:id/roles", auth, async (req, res) => {
   }
 });
 
+// MARK EMPLOYEE AS RESIGNED
+router.patch("/:id/resign", auth, async (req, res) => {
+  try {
+    const employee = await Employee.findById(req.params.id);
+
+    if (!employee) {
+      return res.status(404).json({
+        message: "Employee not found.",
+      });
+    }
+
+    if (employee.status === "Resigned") {
+      return res.status(400).json({
+        message: "Employee is already resigned.",
+      });
+    }
+
+    employee.status = "Resigned";
+
+    await employee.save();
+
+    await employee.populate("roles");
+    await employee.populate("activeRole");
+    await employee.populate(
+      "reportsTo",
+      "firstName lastName employeeCode designation",
+    );
+
+    res.json({
+      message: "Employee marked as resigned successfully.",
+      employee,
+    });
+  } catch (error) {
+    console.error("RESIGN EMPLOYEE ERROR:", error);
+
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+});
+
 module.exports = router;

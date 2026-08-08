@@ -62,7 +62,7 @@ const jobSchema = new mongoose.Schema(
 
     repeatFrequency: {
       type: String,
-      enum: ["None", "Weekly", "Monthly", "Yearly"],
+      enum: ["None", "Weekly", "Monthly", "Quarterly", "Yearly"],
       default: "None",
     },
 
