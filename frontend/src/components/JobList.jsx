@@ -1028,8 +1028,8 @@ function JobList() {
       </div>
 
       {/* =========================
-          JOB CARDS
-      ========================== */}
+    JOB TABLE
+========================== */}
 
       {filteredJobs.length === 0 ? (
         <div className="empty-jobs">
@@ -1044,147 +1044,122 @@ function JobList() {
           </button>
         </div>
       ) : (
-        <div className="jobs-grid">
-          {filteredJobs.map((job) => {
-            const utilization = getBudgetUtilization(job);
+        <div className="jobs-table-wrapper">
+          <table className="jobs-table">
+            <thead>
+              <tr>
+                <th>Client Name</th>
+                <th>Project Name</th>
+                <th>Job Name</th>
+                <th>Spent Hours</th>
+                <th>Reviewer Hours</th>
+                <th>Status</th>
+                <th>Priority</th>
+                <th>View</th>
+              </tr>
+            </thead>
 
-            const budgetStatus =
-              job.budgetSummary?.budgetStatus || "Within Budget";
+            <tbody>
+              {filteredJobs.map((job) => {
+                const reviewerHours =
+                  job.assignments
+                    ?.filter((assignment) => assignment.role === "Reviewer")
+                    .reduce(
+                      (total, assignment) =>
+                        total + Number(assignment.spentHours || 0),
+                      0,
+                    ) || 0;
 
-            return (
-              <div
-                key={job._id}
-                className="job-card"
-                onClick={() => {
-                  setSelectedJob(job);
-                  setReviewComments("");
-                  setShowJobModal(true);
-                }}
-              >
-                <div className="job-card-top">
-                  <div className="job-card-title-area">
-                    <h3 className="job-title">{job.jobName}</h3>
+                return (
+                  <tr key={job._id}>
+                    <td>
+                      <span className="table-primary-text">
+                        {job.clientName}
+                      </span>
+                    </td>
 
-                    <p className="job-project">
-                      {job.clientName} <span>•</span> {job.projectName}
-                    </p>
-                  </div>
+                    <td>
+                      <span className="table-primary-text">
+                        {job.projectName}
+                      </span>
+                    </td>
 
-                  <span
-                    className={`status-badge ${getStatusClass(job.status)}`}
-                  >
-                    {job.status}
-                  </span>
-                </div>
+                    <td>
+                      <span className="table-job-name">{job.jobName}</span>
+                    </td>
 
-                <div className="job-card-badges">
-                  <span
-                    className={`priority-badge ${getPriorityClass(
-                      job.priority,
-                    )}`}
-                  >
-                    {job.priority} Priority
-                  </span>
+                    <td>
+                      <strong className="table-hours">
+                        {job.budgetSummary?.spentHours || 0} hrs
+                      </strong>
+                    </td>
 
-                  <span className="type-badge">{job.jobType}</span>
+                    <td>
+                      <strong className="table-hours">
+                        {reviewerHours} hrs
+                      </strong>
+                    </td>
 
-                  {job.repeatJob && (
-                    <span className="recurring-badge">↻ Recurring</span>
-                  )}
-                </div>
+                    <td>
+                      <span
+                        className={`status-badge ${getStatusClass(job.status)}`}
+                      >
+                        {job.status}
+                      </span>
+                    </td>
 
-                <div className="job-metrics">
-                  <div className="job-metric">
-                    <span>Budget</span>
-                    <strong>{job.budgetedHours}h</strong>
-                  </div>
+                    <td>
+                      <span
+                        className={`priority-badge ${getPriorityClass(
+                          job.priority,
+                        )}`}
+                      >
+                        {job.priority}
+                      </span>
+                    </td>
 
-                  <div className="job-metric">
-                    <span>Spent</span>
-                    <strong>{job.budgetSummary?.spentHours || 0}h</strong>
-                  </div>
+                    <td>
+                      <button
+                        type="button"
+                        className="view-job-button"
+                        title="View Job"
+                        aria-label={`View ${job.jobName}`}
+                        onClick={() => {
+                          setSelectedJob(job);
+                          setReviewComments("");
+                          setShowJobModal(true);
+                        }}
+                      >
+                        <svg
+                          viewBox="0 0 24 24"
+                          aria-hidden="true"
+                          className="employee-view-icon"
+                        >
+                          <path
+                            d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="1.8"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
 
-                  <div className="job-metric">
-                    <span>Remaining</span>
-                    <strong>{job.budgetSummary?.remainingHours || 0}h</strong>
-                  </div>
-                </div>
-
-                <div className="budget-section">
-                  <div className="budget-header">
-                    <span>Budget Usage</span>
-
-                    <strong>{utilization}%</strong>
-                  </div>
-
-                  <div className="budget-progress">
-                    <div
-                      className={`budget-progress-fill ${
-                        utilization > 100
-                          ? "budget-danger"
-                          : utilization >= 80
-                            ? "budget-warning"
-                            : "budget-good"
-                      }`}
-                      style={{
-                        width: `${Math.min(utilization, 100)}%`,
-                      }}
-                    ></div>
-                  </div>
-
-                  <div
-                    className={`budget-status ${
-                      budgetStatus === "Over Budget"
-                        ? "budget-status-danger"
-                        : "budget-status-good"
-                    }`}
-                  >
-                    {budgetStatus}
-                  </div>
-                </div>
-
-                <div className="job-card-divider"></div>
-
-                <div className="job-assignment-section">
-                  <div className="card-section-label">Assigned Employees</div>
-
-                  {job.assignments?.length ? (
-                    <div className="assigned-list">
-                      {job.assignments.map((assignment, index) => (
-                        <div className="assigned-employee" key={index}>
-                          <div className="employee-avatar">
-                            {assignment.employeeId?.firstName
-                              ?.charAt(0)
-                              ?.toUpperCase()}
-                          </div>
-
-                          <div className="assigned-employee-info">
-                            <strong>
-                              {assignment.employeeId?.firstName}{" "}
-                              {assignment.employeeId?.lastName}
-                            </strong>
-
-                            <span>
-                              {assignment.role} • {assignment.allocatedHours}{" "}
-                              hrs
-                            </span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <span className="no-assignment">No employees assigned</span>
-                  )}
-                </div>
-
-                <div className="job-card-footer">
-                  <span>Assignment: {formatDate(job.assignmentDate)}</span>
-
-                  <span className="view-details">View Details →</span>
-                </div>
-              </div>
-            );
-          })}
+                          <circle
+                            cx="12"
+                            cy="12"
+                            r="2.8"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="1.8"
+                          />
+                        </svg>
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
       )}
 

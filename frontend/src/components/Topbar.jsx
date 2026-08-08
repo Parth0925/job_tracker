@@ -128,7 +128,7 @@ function Topbar({ onPageChange }) {
   return (
     <header className="topbar">
       <div className="topbar-left">
-        <div className="topbar-search">
+        <div className="search-box">
           <Search size={17} />
 
           <input
